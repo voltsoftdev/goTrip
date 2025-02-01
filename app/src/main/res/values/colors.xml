@@ -1,10 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <color name="transparent">#00FFFFFF</color>
+    <color name="main">#171036</color>
+    <color name="main_alpha70">#a0171036</color>
+    <color name="main_alpha50">#80171036</color>
+    <color name="main_light">#3f5a79</color>
+    <color name="main_start">#0F2F4F</color>
+    <color name="main_middle">#171036</color>
+    <color name="main_end">#0E0F37</color>
+    <color name="main_endAlpha80">#a00E0F37</color>
+    <color name="main_endAlpha50">#800E0F37</color>
+    <color name="main_gradient1">#5d42e2</color>
+    <color name="main_gradient2">#ac38e2</color>
+    <color name="main_gradient3">#eb50d1</color>
+    <color name="vote_highlight">#fcf876</color>
+    <color name="vote_highlight_alpha80">#a0fcf876</color>
+    <color name="ripple_color">#66000000</color>
+
+    <color name="vote_gradient_color1">#54b8ff</color>
+    <color name="vote_gradient_color2">#931df3</color>
+    <color name="vote_gradient_color3">#b90fc4</color>
+
+    <color name="main_purple">#7175B5</color>
+    <color name="main_back">#464c64</color>
+    <color name="main_backAlpha80">#a0464c64</color>
+    <color name="main_backAlpha50">#80464c64</color>
+    <color name="color_gmail_theme">#FF6464</color>
+    <color name="color_kakao_theme">#FFEB00</color>
+    <color name="color_facebook_theme">#415DAE</color>
+    <color name="color_naver_theme1">#03EB64</color>
+    <color name="color_naver_theme2">#14E6BE</color>
+    <color name="color_naver_theme3">#1EC8E8</color>
+    <color name="color_grass">#48B332</color>
+    <color name="color_water">#57AFDF</color>
+    <color name="color_sand1">#FBE9CC</color>
+    <color name="color_sand2">#F8D69E</color>
+
+    <color name="color_clay_pigeon_dish">#FC653F</color>
+    <color name="color_white">#FFffffff</color>
+    <color name="color_black">#FF000000</color>
+    <color name="color_transparent">#01000000</color>
+    <color name="color_white50">#80ffffff</color>
+    <color name="color_white70">#AAffffff</color>
+    <color name="color_white80">#CCffffff</color>
+    <color name="color_black50">#80000000</color>
+    <color name="color_black60">#99000000</color>
+
+    <!-- COMMON STYLE GUIDE -->
+    <color name="color_6B2FB1">#6B2FB1</color>
+    <color name="color_adadad">#adadad</color>
+    <color name="color_e7e7e7">#e7e7e7</color>
+    <color name="color_B3e7e7e7">#b3e7e7e7</color>
+    <color name="color_666666">#666666</color>
+    <color name="color_6b2fb1">#6b2fb1</color>
+    <color name="color_010101">#010101</color>
+    <color name="color_1f2930">#1f2930</color>
+    <color name="color_222222">#222222</color>
+    <color name="color_32609b">#32609b</color>
+    <color name="color_326090">#326090</color>
+    <color name="color_a0326090">#ca326090</color>
+    <color name="color_333333">#333333</color>
+    <color name="color_444444">#444444</color>
+    <color name="color_738cae">#738cae</color>
+    <color name="color_7c7c7c">#7c7c7c</color>
+    <color name="color_c3c3c3">#c3c3c3</color>
+    <color name="color_cfcfcf">#cfcfcf</color>
+    <color name="color_eeeeee">#eeeeee</color>
+    <color name="color_fafafa">#fafafa</color>
+    <color name="color_e34040">#e34040</color>
+    <color name="color_b3000000">#b3000000</color>
+    <color name="color_ffffff">#ffffff</color>
+    <color name="color_505050">#505050</color>
+    <color name="color_d6d6d6">#d6d6d6</color>
+    <color name="color_999999">#999999</color>
+    <color name="color_80999999">#80999999</color>
+    <color name="color_fd454f">#fd454f</color>
+    <color name="color_82bf2b">#82bf2b</color>
+    <color name="color_f6f6f6">#f6f6f6</color>
+    <color name="color_33cfa6ff">#33cfa6ff</color>
+    <color name="color_ff4081">#FF4081</color>
+    <color name="color_F20055">#F20055</color>
+    <color name="color_fff56c">#fff56c</color>
+
+
+    <color name="color_cccccc">#cccccc</color>
+    <color name="color_80c9c9c9">#80c9c9c9</color>
+    <color name="color_c9c9c9">#c9c9c9</color>
+    <color name="color_line">#dcdcdc</color>
+    <color name="color_dedede">#dedede</color>
+    <color name="color_f2f2f2">#f2f2f2</color>
+    <color name="color_dcdcdc">#dcdcdc</color>
+    <color name="color_cc333333">#CC333333</color>
+    <color name="color_AA888888">#AA888888</color>
+
+    <color name="background_tab_pressed">#6633B5E5</color>
+
+    <drawable name="drawable_f0f0f0">#f0f0f0</drawable>
+    <drawable name="drawable_6b2fb1">#6b2fb1</drawable>
+    <drawable name="drawable_401b6c">#401b6c</drawable>
+    <drawable name="drawable_666666">#666666</drawable>
+    <drawable name="drawable_999999">#999999</drawable>
+    <drawable name="drawable_1a888888">#1A888888</drawable>
+
+    <color name="color_1a888888">#1A888888</color>
+    <color name="color_black10">#20000000</color>
+    <color name="color_black20">#40000000</color>
+    <color name="color_black30">#60000000</color>
+    <color name="color_black40">#70000000</color>
+    <color name="color_black70">#a9000000</color>
+    <color name="color_black80">#b9000000</color>
+
+    <!-- COMMON STYLE GUIDE -->
+    <color name="color_3b1e1e">#3b1e1e</color>
+    <color name="color_8BEAE6">#8BEAE6</color>
+    <color name="color_3FD9D2">#3FD9D2</color>
+    <color name="color_1cdbc4">#1cdbc4</color>
+    <color name="color_501cdbc4">#801cdbc4</color>
+    <color name="color_801cdbc4">#c01cdbc4</color>
+    <color name="color_14d3cf">#14d3cf</color>
+    <color name="color_5014d3cf">#8014d3cf</color>
+    <color name="color_8014d3cf">#c014d3cf</color>
+    <color name="color_fbfbfb">#fbfbfb</color>
+    <color name="color_464c64">#464c64</color>
+    <color name="color_80464c64">#a0464c64</color>
+    <color name="color_ff3173">#ff3173</color>
+    <color name="color_FF4081">#FF4081</color>
+    <color name="color_FF6464">#FF6464</color>
+    <color name="color_80666666">#80666666</color>
+    <color name="color_b1b1b1">#b1b1b1</color>
+    <color name="color_80ee4480">#a0ee4480</color>
+    <color name="color_ee4480">#ee4480</color>
+    <color name="color_ea1A63">#ea1A63</color>
+    <color name="color_50_ea1A63">#80ea1A63</color>
+    <color name="color_30_ea1A63">#40ea1A63</color>
+    <color name="color_20_ea1A63">#30ea1A63</color>
+    <color name="color_10_ea1A63">#20ea1A63</color>
+    <color name="color_eaeaea">#eaeaea</color>
+    <color name="color_d9d9d9">#d9d9d9</color>
+    <color name="color_1bc694">#1bc694</color>
+    <color name="color_5D68A7">#5D68A7</color>
+    <color name="color_50fff56c">#aafff56c</color>
+    <color name="color_ECDA00">#ECDA00</color>
+    <color name="color_80fff56c">#cafff56c</color>
+    <color name="color_00714e">#00714e</color>
+    <!-- PROGRESS DRAWABLE CONST START -->
+    <color name="cpb_grey">#ffdedede</color>
+    <color name="cpb_blue">#ff0099cc</color>
+    <color name="cpb_blue_dark">#ff00719b</color>
+    <color name="cpb_red">#ffff4444</color>
+    <color name="cpb_red_dark">#ffcd3a3a</color>
+    <color name="cpb_green">#ff99cc00</color>
+    <color name="cpb_green_dark">#ff6d9b00</color>
+    <color name="cpb_white">@android:color/white</color>
+    <!-- PROGRESS DRAWABLE CONST END -->
+
+    <color name="coin_color1">#F58F00</color>   <!-- 비트코인 -->
+    <color name="coin_color2">#5F85BB</color>   <!-- 이더리움 -->
+    <color name="coin_color3">#14B1C7</color>   <!-- 리풀 -->
+    <color name="coin_color4">#6B3FA0</color>   <!-- 솔라나 -->
+    <color name="coin_color5">#D4A13A</color>   <!-- 도지 -->
+
+    <color name="card_color1">#8b2d2b</color>
+    <color name="card_color2">#FDD835</color>
+
+    <color name="advancement_color">@color/color_80fff56c</color>
+    <color name="demotion_color">@color/color_black40</color>
+
+    <color name="game_background">#171036</color>
+    <color name="game_background_middle">#171036</color>
+    <color name="game_background_middle50">#a0171036</color>
+    <color name="game_background_dark">#171036</color>
+
+
+    <color name="price_color_up">@color/color_ea1A63</color>
+    <color name="price_color_up_alpha50">@color/color_50_ea1A63</color>
+    <color name="price_color_up_alpha30">@color/color_30_ea1A63</color>
+    <color name="price_color_up_alpha20">@color/color_20_ea1A63</color>
+    <color name="price_color_up_alpha10">@color/color_10_ea1A63</color>
+    <color name="price_color_down">#3B82F6</color>
+    <color name="price_color_down_alpha50">#803B82F6</color>
+    <color name="price_color_down_alpha30">#403B82F6</color>
+    <color name="price_color_down_alpha20">#303B82F6</color>
+    <color name="price_color_down_alpha10">#203B82F6</color>
+
+    <color name="clay_color1">#d48972</color>
+    <color name="clay_color2">#d2846b</color>
+    <color name="clay_color3">#d07f65</color>
+    <color name="clay_color4">#ce795f</color>
+
 </resources>

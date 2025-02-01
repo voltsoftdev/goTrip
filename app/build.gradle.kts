@@ -1,5 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.baselineprofile)
+    alias(libs.plugins.roborazzi)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.android)
 }
 
@@ -26,21 +30,45 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures{
+        dataBinding = true
+        viewBinding = true
+        buildConfig = true
+        compose = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.ui.tooling.preview.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.compose.constraintlayout)
+//    implementation(libs.activity.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+
+    implementation(libs.compose)
+    implementation(libs.compose.material)
+    implementation(libs.compose.preview)
+
+    implementation(libs.google.service.map)
+    implementation(libs.google.service.location)
+    implementation(libs.map.compose)
+    implementation(libs.navigation.compose)
 }
