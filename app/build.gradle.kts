@@ -71,4 +71,5 @@ dependencies {
     implementation(libs.google.service.location)
     implementation(libs.map.compose)
     implementation(libs.navigation.compose)
+    implementation("com.opencsv:opencsv:5.6")
 }
