@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">goTrip</string>
+
+    <string name="request_permission_location_title">주소 정보 권한이 필요합니다.</string>
+    <string name="request_permission_location_message">지역별 정보 제공을 위해서 해당 권한이 필요합니다</string>
+    <string name="request_permission_location_message_to_setting">지역별 정보 제공을 위해서 해당 권한이 필요합니다\n설정 화면 > 권한에서 주소 읽기 권한을 허용 해주세요</string>
+
 </resources>

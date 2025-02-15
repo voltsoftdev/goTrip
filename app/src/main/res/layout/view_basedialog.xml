@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent">
+
+        <ScrollView
+            android:id="@+id/resizeableFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent">
+
+            <LinearLayout
+                android:id="@+id/bean_dialog_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="25dp"
+                android:layout_marginLeft="25dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/color_white"
+                    app:cardCornerRadius="7.5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal">
+
+                        <TextView
+                            android:id="@+id/dialogTitleView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/notosans_kr_bold"
+                            android:includeFontPadding="false"
+                            android:text="타이틀"
+                            android:textSize="16dp"
+                            android:textColor="@color/color_black80"
+                            android:layout_marginTop="14dp"/>
+
+                        <TextView
+                            android:id="@+id/dialogMessageView1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/notosans_kr_regular"
+                            android:includeFontPadding="false"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="30dp"
+                            android:gravity="center"
+                            android:text="메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지메세지"
+                            android:textSize="14dp"
+                            android:textColor="@color/color_black70"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="10dp"/>
+
+                        <TextView
+                            android:id="@+id/dialogMessageView2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:fontFamily="@font/notosans_kr_light"
+                            android:includeFontPadding="false"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="30dp"
+                            android:textColor="@color/color_black50"
+                            android:text="작은메세지작은메세지작은메세지작은메세지작은메세지작은메세지작은메세지작은메세지"
+                            android:textSize="13dp"/>
+
+                        <LinearLayout
+                            android:id="@+id/checkBoxFrame"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatToggleButton
+                                android:id="@+id/checkButton"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_gravity="center_vertical"
+                                android:textOff=""
+                                android:textOn=""
+                                android:checked="true"
+                                android:background="@drawable/selector_check"/>
+
+                            <TextView
+                                android:id="@+id/checkButtonText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/notosans_kr_light"
+                                android:layout_gravity="center_vertical"
+                                android:textSize="14dp"
+                                android:textColor="@color/color_black"
+                                android:layout_marginLeft="15dp"
+                                android:includeFontPadding="false"
+                                android:text="체크박스체크박스체크박스"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="20dp">
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/cancelButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="취소"
+                                android:fontFamily="@font/notosans_kr_regular"
+                                android:includeFontPadding="false"
+                                android:textColor="@color/color_white"
+                                android:textSize="16dp"
+                                android:background="@color/main_start"/>
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/confirmButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="확인"
+                                android:fontFamily="@font/notosans_kr_regular"
+                                android:includeFontPadding="false"
+                                android:textSize="16dp"
+                                android:textColor="@color/color_white"
+                                android:background="@color/main"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </FrameLayout>
+
+</layout>

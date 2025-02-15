@@ -52,7 +52,13 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+//    implementation(libs.androidx.activity.ktx)
+//    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.appcompat)
+
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.viewmodel.compose)
+
     implementation(libs.material)
     implementation(libs.androidx.ui.tooling.preview.android)
     testImplementation(libs.junit)
@@ -60,16 +66,17 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(libs.compose.constraintlayout)
-//    implementation(libs.activity.compose)
-    implementation(libs.lifecycle.viewmodel.compose)
+
 
     implementation(libs.compose)
     implementation(libs.compose.material)
     implementation(libs.compose.preview)
+    implementation(libs.compose.material.icons)
 
     implementation(libs.google.service.map)
     implementation(libs.google.service.location)
     implementation(libs.map.compose)
     implementation(libs.navigation.compose)
     implementation("com.opencsv:opencsv:5.6")
+
 }
