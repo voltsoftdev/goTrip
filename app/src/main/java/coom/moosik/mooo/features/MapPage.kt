@@ -188,7 +188,7 @@ class MapPage : CommonPage() {
     @Composable
     fun MapPageLayout(modifier: Modifier = Modifier) {
 
-        val markers by remember { model.markers }
+        val markers by model.markers.collectAsState()
 
         val currentPosition by model.currentPosition.collectAsState()
 
@@ -205,7 +205,7 @@ class MapPage : CommonPage() {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-
+                        CategorySelectDialog().show(supportFragmentManager, "")
                     },
                     backgroundColor = MaterialTheme.colors.primary,
                 ) {

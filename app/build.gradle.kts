@@ -52,8 +52,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.activity.ktx)
-//    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.appcompat)
 
     implementation(libs.lifecycle.viewmodel)
@@ -78,5 +78,6 @@ dependencies {
     implementation(libs.map.compose)
     implementation(libs.navigation.compose)
     implementation("com.opencsv:opencsv:5.6")
+    debugImplementation(libs.androidx.ui.tooling)
 
 }
