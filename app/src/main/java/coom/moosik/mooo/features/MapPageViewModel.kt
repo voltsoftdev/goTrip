@@ -42,7 +42,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     val markers : StateFlow<List<Marker>>
         get() = this._markers
 
-    var categories : MutableStateFlow<Pair<Long, List<Category>>> = MutableStateFlow(Pair(0L, emptyList()))
+    var categories : MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
 
     var selectedCategory : MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
 
@@ -108,13 +108,13 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 //        list.add(SubCategory(id = "uuj", name = "유원지,동물원"))
 //        list.add(SubCategory(id = "yh", name = "yh"))
 
-        categories.value = Pair(System.currentTimeMillis(), list)
+        categories.value = list
 
         viewModelScope.launch {
             categories.collectLatest {
                 Log.d("woozie", "++ categories called !! ")
                 val selected : MutableSet<String> = mutableSetOf()
-                it.second.forEach { category ->
+                it.forEach { category ->
                     category.subCategories.forEach { subCategory ->
                         if (subCategory.isChecked) {
                             selected.add(subCategory.id)
@@ -147,9 +147,11 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     fun toggleCategory(id: String) {
         Log.d("woozie", "++ toggleCategory id: $id ")
-        val updatedCategories = categories.value.second.map { category ->
+        val updatedCategories = categories.value.map { category ->
             if (category.id == id) {
-                category.apply { isChecked = !category.isChecked }
+                category.copy(
+                    subCategories = category.subCategories.map { it.copy(isChecked = !it.isChecked) }
+                )
             }
             else
             {
@@ -157,18 +159,20 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         Log.d("woozie", "++ toggleCategory updatedCategories: $updatedCategories")
-        categories.tryEmit(Pair(System.currentTimeMillis(), updatedCategories))
+        categories.tryEmit(updatedCategories)
     }
 
     fun toggleSubCategory(id: String, sub : String) {
         Log.d("woozie", "++ toggleSubCategory id: $id sub: $sub")
-        val updatedCategories = categories.value.second.map { category ->
+        val updatedCategories = categories.value.map { category ->
             if (category.id == id) {
                 val subCategories = category.subCategories.map { subCategory ->
                     if (subCategory.id == sub) {
-                        subCategory.isChecked = !subCategory.isChecked
+                        subCategory.copy(isChecked = !subCategory.isChecked)
                     }
-                    subCategory
+                    else {
+                        subCategory
+                    }
                 }
                 category.copy(subCategories = subCategories)
             }
@@ -178,7 +182,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         Log.d("woozie", "++ toggleSubCategory updatedCategories: $updatedCategories")
-        categories.tryEmit(Pair(System.currentTimeMillis(), updatedCategories))
+        categories.tryEmit(updatedCategories)
     }
 
     @Throws(IOException::class, CsvException::class)

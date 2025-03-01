@@ -97,7 +97,7 @@ class CategorySelectDialog : DialogFragment() {
                 CategoryListView(modifier = Modifier
                     .fillMaxSize()
                     .fillMaxHeight(),
-                    categories = list.second)
+                    categories = list)
             }
         }
     }
