@@ -189,7 +189,7 @@ class CategorySelectDialog : DialogFragment() {
     @Preview
     @Composable
     fun SubCategoryItemView(
-        category: Category = Category(id = "") ,subCategory: SubCategory = SubCategory(id = "명승지", name = "명승지")) {
+        category: Category = Category(id = "") ,subCategory: SubCategory = SubCategory(id = "명승지", img ="", name = "명승지")) {
 
         Box(modifier = Modifier
             .fillMaxWidth()
@@ -213,9 +213,10 @@ class CategorySelectDialog : DialogFragment() {
                     Spacer(modifier = Modifier.width(12.5.dp))
 
                     val iconIdentifier = LocalContext.current.resources.getIdentifier(
-                        subCategory.id, "drawable", LocalContext.current.packageName)
+                        subCategory.img, "drawable", LocalContext.current.packageName)
                     Image(
-                        painter = painterResource(id = iconIdentifier),
+                        painter = painterResource(
+                            id = if (iconIdentifier != 0) iconIdentifier else R.drawable.gaja),
                         modifier = Modifier
                             .width(24.dp)
                             .height(24.dp),

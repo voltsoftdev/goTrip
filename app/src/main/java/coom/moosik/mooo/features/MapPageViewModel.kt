@@ -52,76 +52,74 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         val list = arrayListOf<Category>()
 
         val subCategories1 : MutableSet<SubCategory> = mutableSetOf()
-        subCategories1.add(SubCategory(id = "mncj", name = "먹거리축제"))
-        subCategories1.add(SubCategory(id = "chcj", name = "문화축제"))
-        subCategories1.add(SubCategory(id = "bncj", name = "보는축제"))
-        subCategories1.add(SubCategory(id = "sgjt", name = "5일장"))
+        subCategories1.add(SubCategory(id = "mncj", img = "mncj", name = "먹거리축제"))
+        subCategories1.add(SubCategory(id = "chcj", img = "chcj", name = "문화축제"))
+        subCategories1.add(SubCategory(id = "bncj", img = "bncj", name = "보는축제"))
+        subCategories1.add(SubCategory(id = "sgjt", img = "sgjt", name = "5일장"))
         list.add(Category(id = "축제", subCategories = subCategories1.toMutableList()))
 
         val subCategories2 : MutableSet<SubCategory> = mutableSetOf()
-        subCategories2.add(SubCategory(id = "mncj", name = "먹자골목"))
-        subCategories2.add(SubCategory(id = "sd", name = "미쉐린"))
+        subCategories2.add(SubCategory(id = "mncj", img = "mncj", name = "먹자골목"))
+        subCategories2.add(SubCategory(id = "sd1", img = "sd", name = "미쉐린"))
+        subCategories2.add(SubCategory(id = "sd2", img = "sd", name = "식객"))
+        subCategories2.add(SubCategory(id = "sd3", img = "sd", name = "맛집"))
         list.add(Category(id = "먹거리", subCategories = subCategories2.toMutableList()))
 
         val subCategories3 : MutableSet<SubCategory> = mutableSetOf()
-        subCategories3.add(SubCategory(id = "msj", name = "명승지"))
-        subCategories3.add(SubCategory(id = "gu", name = "국립공원"))
-        subCategories3.add(SubCategory(id = "cygnm", name = "천연기념물"))
-        subCategories3.add(SubCategory(id = "pp", name = "폭포"))
-        subCategories3.add(SubCategory(id = "bhs", name = "보호수"))
+        subCategories3.add(SubCategory(id = "msj1", img = "msj", name = "명승지"))
+        subCategories3.add(SubCategory(id = "msj2", img = "msj", name = "명승지"))
+        subCategories3.add(SubCategory(id = "gu", img = "gu", name = "국립공원"))
+        subCategories3.add(SubCategory(id = "cygnm", img = "cygnm", name = "천연기념물"))
+        subCategories3.add(SubCategory(id = "pp", img = "pp", name = "폭포"))
+        subCategories3.add(SubCategory(id = "bhs", img = "bhs", name = "보호수"))
         list.add(Category(id = "자연", subCategories = subCategories3.toMutableList()))
 
-//        list.add(SubCategory(id = "bmg", name = "박물관"))
-//        list.add(SubCategory(id = "bncj", name = "보는축제"))
-//        list.add(SubCategory(id = "chcj", name = "체험축제"))
-//        list.add(SubCategory(id = "cmd", name = "천문대"))
-//        list.add(SubCategory(id = "cyj", name = "영화,드라마 촬영지"))
-//        list.add(SubCategory(id = "dbg", name = "둘러볼곳"))
-//        list.add(SubCategory(id = "dmu", name = "동물원"))
-//        list.add(SubCategory(id = "dmu", name = "동물원"))
-//        list.add(SubCategory(id = "dr", name = "dr"))
-//        list.add(SubCategory(id = "ds", name = "위인동상"))
-//        list.add(SubCategory(id = "dsg", name = "도서관"))
-//        list.add(SubCategory(id = "gb", name = "gb"))
-//        list.add(SubCategory(id = "gnm", name = "고인돌"))
-//        list.add(SubCategory(id = "gu", name = "gu"))
-//        list.add(SubCategory(id = "hs", name = "hs"))
-//        list.add(SubCategory(id = "hsyj", name = "해수욕장"))
-//        list.add(SubCategory(id = "jg", name = "jg"))
-//        list.add(SubCategory(id = "mh", name = "mh"))
-//        list.add(SubCategory(id = "mjgm", name = "mjgm"))
-//        list.add(SubCategory(id = "mncj", name = "mncj"))
-//        list.add(SubCategory(id = "ms", name = "ms"))
-//        list.add(SubCategory(id = "msg", name = "msg"))
-//        list.add(SubCategory(id = "msj", name = "명승지, 관광지"))
-//        list.add(SubCategory(id = "nids", name = "nids"))
-//        list.add(SubCategory(id = "or", name = "올레길,둘레길"))
-//        list.add(SubCategory(id = "pp", name = "폭포"))
-//        list.add(SubCategory(id = "sbus", name = "sbus"))
-//        list.add(SubCategory(id = "sd", name = "미쉐린,식객,맛집"))
-//        list.add(SubCategory(id = "sd5", name = "미쉐린,식객,맛집 (2)"))
-//        list.add(SubCategory(id = "sgjt", name = "5일장터"))
-//        list.add(SubCategory(id = "ski", name = "스키장,눈썰매장"))
-//        list.add(SubCategory(id = "smu", name = "국보,보물,유적지"))
-//        list.add(SubCategory(id = "ujj", name = "유적지"))
-//        list.add(SubCategory(id = "unc", name = "unc"))
-//        list.add(SubCategory(id = "uuj", name = "유원지,동물원"))
-//        list.add(SubCategory(id = "yh", name = "yh"))
+        val subCategories4 : MutableSet<SubCategory> = mutableSetOf()
+        subCategories4.add(SubCategory(id = "dmu", img = "dmu", name = "동물원"))
+        subCategories4.add(SubCategory(id = "smu", img = "smu", name = "식물원"))
+        subCategories4.add(SubCategory(id = "uuj", img = "uuj", name = "유원지"))
+        subCategories4.add(SubCategory(id = "msg", img = "msg", name = "미술관"))
+        subCategories4.add(SubCategory(id = "bmg1", img = "bmg", name = "국립박물관"))
+        subCategories4.add(SubCategory(id = "bmg2", img = "bmg", name = "사립박물관"))
+        subCategories4.add(SubCategory(id = "cmd", img = "cmd", name = "천문대"))
+        subCategories4.add(SubCategory(id = "unc", img = "unc", name = "유네스코지정"))
+        subCategories4.add(SubCategory(id = "dsg", img = "dsg", name = "도서관"))
+        subCategories4.add(SubCategory(id = "jg", img = "jg", name = "종교시설"))
+        list.add(Category(id = "문화공간", subCategories = subCategories4.toMutableList()))
+
+        val subCategories5 : MutableSet<SubCategory> = mutableSetOf()
+        subCategories5.add(SubCategory(id = "nids", img = "nids", name = "놀이동산"))
+        subCategories5.add(SubCategory(id = "or", img = "or", name = "올레길"))
+        subCategories5.add(SubCategory(id = "uuj", img = "uuj", name = "유원지"))
+        subCategories5.add(SubCategory(id = "hsyj", img = "hsyj", name = "해수욕장"))
+        subCategories5.add(SubCategory(id = "ski", img = "ski", name = "스키장"))
+        subCategories5.add(SubCategory(id = "cyj", img = "cyj", name = "드라마 촬영지"))
+        subCategories5.add(SubCategory(id = "dbg", img = "dbg", name = "둘러볼곳"))
+        list.add(Category(id = "여가, 레저", subCategories = subCategories5.toMutableList()))
+
+        val subCategories6 : MutableSet<SubCategory> = mutableSetOf()
+        subCategories6.add(SubCategory(id = "gb1", img = "gb", name = "국보"))
+        subCategories6.add(SubCategory(id = "gb2", img = "gb", name = "보물"))
+        subCategories6.add(SubCategory(id = "sjj", img = "sjj", name = "사적지"))
+        subCategories6.add(SubCategory(id = "dr1", img = "dr", name = "국가등록문화유산"))
+        subCategories6.add(SubCategory(id = "dr2", img = "dr", name = "시도등록문화유산"))
+        subCategories6.add(SubCategory(id = "mh1", img = "mh", name = "국가민속문화유산"))
+        subCategories6.add(SubCategory(id = "gnm", img = "gnm", name = "시도기념물"))
+        subCategories6.add(SubCategory(id = "ds", img = "ds", name = "위인동상"))
+        list.add(Category(id = "문화재", subCategories = subCategories6.toMutableList()))
 
         categories.value = list
 
         viewModelScope.launch {
             categories.collectLatest {
-                Log.d("woozie", "++ categories called !! ")
                 val selected : MutableSet<String> = mutableSetOf()
                 it.forEach { category ->
                     category.subCategories.forEach { subCategory ->
                         if (subCategory.isChecked) {
-                            selected.add(subCategory.id)
+                            selected.add(subCategory.img)
                         }
                     }
                 }
-                Log.d("woozie", "++ selectedCategory selected: $selected")
                 selectedCategory.tryEmit(selected)
             }
         }
@@ -135,7 +133,6 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                         markers.add(marker)
                     }
                 }
-                Log.d("woozie", "++ selectedCategory markers: $markers")
                 _markers.tryEmit(markers)
             }
         }
@@ -146,11 +143,10 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun toggleCategory(id: String) {
-        Log.d("woozie", "++ toggleCategory id: $id ")
         val updatedCategories = categories.value.map { category ->
             if (category.id == id) {
                 category.copy(
-                    subCategories = category.subCategories.map { it.copy(isChecked = !it.isChecked) }
+                    subCategories = category.subCategories.map { it.copy(isChecked = !category.isChecked) }
                 )
             }
             else
@@ -158,12 +154,10 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                 category
             }
         }
-        Log.d("woozie", "++ toggleCategory updatedCategories: $updatedCategories")
         categories.tryEmit(updatedCategories)
     }
 
     fun toggleSubCategory(id: String, sub : String) {
-        Log.d("woozie", "++ toggleSubCategory id: $id sub: $sub")
         val updatedCategories = categories.value.map { category ->
             if (category.id == id) {
                 val subCategories = category.subCategories.map { subCategory ->
@@ -181,7 +175,6 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                 category
             }
         }
-        Log.d("woozie", "++ toggleSubCategory updatedCategories: $updatedCategories")
         categories.tryEmit(updatedCategories)
     }
 
