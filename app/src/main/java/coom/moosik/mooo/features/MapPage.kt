@@ -202,20 +202,6 @@ class MapPage : CommonPage() {
                     title = { Text(text = "가자구요") },
                 )
             },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = {
-                        CategorySelectDialog().show(supportFragmentManager, "")
-                    },
-                    backgroundColor = MaterialTheme.colors.primary,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Menu"
-                    )
-                }
-            },
-            floatingActionButtonPosition = FabPosition.Start,
             content = { paddingValues ->
 
                 ConstraintLayout(modifier = modifier
@@ -255,6 +241,25 @@ class MapPage : CommonPage() {
                         Marker(
                             state = MarkerState(position = currentPosition.second),
                             title = "현재 위치",
+                        )
+                    }
+
+                    val menuPositionButtonRef = createRef()
+                    FloatingActionButton(
+                        modifier = Modifier
+                            .width(48.dp).height(48.dp)
+                            .constrainAs(menuPositionButtonRef) {
+                                absoluteRight.linkTo(parent.absoluteRight, margin = 15.dp)
+                                top.linkTo(parent.top, margin = 15.dp)
+                            },
+                        onClick = {
+                            CategorySelectDialog().show(supportFragmentManager, "")
+                        },
+                        backgroundColor = MaterialTheme.colors.primary,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Menu"
                         )
                     }
 

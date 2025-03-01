@@ -15,7 +15,9 @@ import com.opencsv.CSVReader
 import com.opencsv.exceptions.CsvException
 import coom.moosik.mooo.MooSikApp
 import coom.moosik.mooo.extensions.isNumeric
+import coom.moosik.mooo.model.Category
 import coom.moosik.mooo.model.Marker
+import coom.moosik.mooo.model.SelectableCategory
 import coom.moosik.mooo.model.SubCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,60 +42,86 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     val markers : StateFlow<List<Marker>>
         get() = this._markers
 
-    var categories : MutableStateFlow<List<SubCategory>> = MutableStateFlow(emptyList())
+    var categories : MutableStateFlow<Pair<Long, List<Category>>> = MutableStateFlow(Pair(0L, emptyList()))
 
     var selectedCategory : MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
 
     init {
         allMarkers.tryEmit(loadData())
 
-        val list = arrayListOf<SubCategory>()
-        list.add(SubCategory(id = "bmg", name = "박물관"))
-        list.add(SubCategory(id = "bncj", name = "보는축제"))
-        list.add(SubCategory(id = "chcj", name = "체험축제"))
-        list.add(SubCategory(id = "cmd", name = "천문대"))
-        list.add(SubCategory(id = "cyj", name = "영화,드라마 촬영지"))
-        list.add(SubCategory(id = "dbg", name = "둘러볼곳"))
-        list.add(SubCategory(id = "dmu", name = "동물원"))
-        list.add(SubCategory(id = "dmu", name = "동물원"))
-        list.add(SubCategory(id = "dr", name = "dr"))
-        list.add(SubCategory(id = "ds", name = "위인동상"))
-        list.add(SubCategory(id = "dsg", name = "도서관"))
-        list.add(SubCategory(id = "gb", name = "gb"))
-        list.add(SubCategory(id = "gnm", name = "고인돌"))
-        list.add(SubCategory(id = "gu", name = "gu"))
-        list.add(SubCategory(id = "hs", name = "hs"))
-        list.add(SubCategory(id = "hsyj", name = "해수욕장"))
-        list.add(SubCategory(id = "jg", name = "jg"))
-        list.add(SubCategory(id = "mh", name = "mh"))
-        list.add(SubCategory(id = "mjgm", name = "mjgm"))
-        list.add(SubCategory(id = "mncj", name = "mncj"))
-        list.add(SubCategory(id = "ms", name = "ms"))
-        list.add(SubCategory(id = "msg", name = "msg"))
-        list.add(SubCategory(id = "msj", name = "명승지, 관광지"))
-        list.add(SubCategory(id = "nids", name = "nids"))
-        list.add(SubCategory(id = "or", name = "올레길,둘레길"))
-        list.add(SubCategory(id = "pp", name = "폭포"))
-        list.add(SubCategory(id = "sbus", name = "sbus"))
-        list.add(SubCategory(id = "sd", name = "미쉐린,식객,맛집"))
-        list.add(SubCategory(id = "sd5", name = "미쉐린,식객,맛집 (2)"))
-        list.add(SubCategory(id = "sgjt", name = "5일장터"))
-        list.add(SubCategory(id = "ski", name = "스키장,눈썰매장"))
-        list.add(SubCategory(id = "smu", name = "국보,보물,유적지"))
-        list.add(SubCategory(id = "ujj", name = "유적지"))
-        list.add(SubCategory(id = "unc", name = "unc"))
-        list.add(SubCategory(id = "uuj", name = "유원지,동물원"))
-        list.add(SubCategory(id = "yh", name = "yh"))
-        categories.value = list
+        val list = arrayListOf<Category>()
+
+        val subCategories1 : MutableSet<SubCategory> = mutableSetOf()
+        subCategories1.add(SubCategory(id = "mncj", name = "먹거리축제"))
+        subCategories1.add(SubCategory(id = "chcj", name = "문화축제"))
+        subCategories1.add(SubCategory(id = "bncj", name = "보는축제"))
+        subCategories1.add(SubCategory(id = "sgjt", name = "5일장"))
+        list.add(Category(id = "축제", subCategories = subCategories1.toMutableList()))
+
+        val subCategories2 : MutableSet<SubCategory> = mutableSetOf()
+        subCategories2.add(SubCategory(id = "mncj", name = "먹자골목"))
+        subCategories2.add(SubCategory(id = "sd", name = "미쉐린"))
+        list.add(Category(id = "먹거리", subCategories = subCategories2.toMutableList()))
+
+        val subCategories3 : MutableSet<SubCategory> = mutableSetOf()
+        subCategories3.add(SubCategory(id = "msj", name = "명승지"))
+        subCategories3.add(SubCategory(id = "gu", name = "국립공원"))
+        subCategories3.add(SubCategory(id = "cygnm", name = "천연기념물"))
+        subCategories3.add(SubCategory(id = "pp", name = "폭포"))
+        subCategories3.add(SubCategory(id = "bhs", name = "보호수"))
+        list.add(Category(id = "자연", subCategories = subCategories3.toMutableList()))
+
+//        list.add(SubCategory(id = "bmg", name = "박물관"))
+//        list.add(SubCategory(id = "bncj", name = "보는축제"))
+//        list.add(SubCategory(id = "chcj", name = "체험축제"))
+//        list.add(SubCategory(id = "cmd", name = "천문대"))
+//        list.add(SubCategory(id = "cyj", name = "영화,드라마 촬영지"))
+//        list.add(SubCategory(id = "dbg", name = "둘러볼곳"))
+//        list.add(SubCategory(id = "dmu", name = "동물원"))
+//        list.add(SubCategory(id = "dmu", name = "동물원"))
+//        list.add(SubCategory(id = "dr", name = "dr"))
+//        list.add(SubCategory(id = "ds", name = "위인동상"))
+//        list.add(SubCategory(id = "dsg", name = "도서관"))
+//        list.add(SubCategory(id = "gb", name = "gb"))
+//        list.add(SubCategory(id = "gnm", name = "고인돌"))
+//        list.add(SubCategory(id = "gu", name = "gu"))
+//        list.add(SubCategory(id = "hs", name = "hs"))
+//        list.add(SubCategory(id = "hsyj", name = "해수욕장"))
+//        list.add(SubCategory(id = "jg", name = "jg"))
+//        list.add(SubCategory(id = "mh", name = "mh"))
+//        list.add(SubCategory(id = "mjgm", name = "mjgm"))
+//        list.add(SubCategory(id = "mncj", name = "mncj"))
+//        list.add(SubCategory(id = "ms", name = "ms"))
+//        list.add(SubCategory(id = "msg", name = "msg"))
+//        list.add(SubCategory(id = "msj", name = "명승지, 관광지"))
+//        list.add(SubCategory(id = "nids", name = "nids"))
+//        list.add(SubCategory(id = "or", name = "올레길,둘레길"))
+//        list.add(SubCategory(id = "pp", name = "폭포"))
+//        list.add(SubCategory(id = "sbus", name = "sbus"))
+//        list.add(SubCategory(id = "sd", name = "미쉐린,식객,맛집"))
+//        list.add(SubCategory(id = "sd5", name = "미쉐린,식객,맛집 (2)"))
+//        list.add(SubCategory(id = "sgjt", name = "5일장터"))
+//        list.add(SubCategory(id = "ski", name = "스키장,눈썰매장"))
+//        list.add(SubCategory(id = "smu", name = "국보,보물,유적지"))
+//        list.add(SubCategory(id = "ujj", name = "유적지"))
+//        list.add(SubCategory(id = "unc", name = "unc"))
+//        list.add(SubCategory(id = "uuj", name = "유원지,동물원"))
+//        list.add(SubCategory(id = "yh", name = "yh"))
+
+        categories.value = Pair(System.currentTimeMillis(), list)
 
         viewModelScope.launch {
             categories.collectLatest {
+                Log.d("woozie", "++ categories called !! ")
                 val selected : MutableSet<String> = mutableSetOf()
-                it.forEach { category ->
-                    if (category.isChecked) {
-                        selected.add(category.id)
+                it.second.forEach { category ->
+                    category.subCategories.forEach { subCategory ->
+                        if (subCategory.isChecked) {
+                            selected.add(subCategory.id)
+                        }
                     }
                 }
+                Log.d("woozie", "++ selectedCategory selected: $selected")
                 selectedCategory.tryEmit(selected)
             }
         }
@@ -107,7 +135,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                         markers.add(marker)
                     }
                 }
-
+                Log.d("woozie", "++ selectedCategory markers: $markers")
                 _markers.tryEmit(markers)
             }
         }
@@ -118,14 +146,39 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun toggleCategory(id: String) {
-        val updatedCategories = categories.value.map { category ->
+        Log.d("woozie", "++ toggleCategory id: $id ")
+        val updatedCategories = categories.value.second.map { category ->
             if (category.id == id) {
-                category.copy(isChecked = !category.isChecked)
-            } else {
+                category.apply { isChecked = !category.isChecked }
+            }
+            else
+            {
                 category
             }
         }
-        categories.value = updatedCategories
+        Log.d("woozie", "++ toggleCategory updatedCategories: $updatedCategories")
+        categories.tryEmit(Pair(System.currentTimeMillis(), updatedCategories))
+    }
+
+    fun toggleSubCategory(id: String, sub : String) {
+        Log.d("woozie", "++ toggleSubCategory id: $id sub: $sub")
+        val updatedCategories = categories.value.second.map { category ->
+            if (category.id == id) {
+                val subCategories = category.subCategories.map { subCategory ->
+                    if (subCategory.id == sub) {
+                        subCategory.isChecked = !subCategory.isChecked
+                    }
+                    subCategory
+                }
+                category.copy(subCategories = subCategories)
+            }
+            else
+            {
+                category
+            }
+        }
+        Log.d("woozie", "++ toggleSubCategory updatedCategories: $updatedCategories")
+        categories.tryEmit(Pair(System.currentTimeMillis(), updatedCategories))
     }
 
     @Throws(IOException::class, CsvException::class)

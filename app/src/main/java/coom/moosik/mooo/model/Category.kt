@@ -1,7 +1,15 @@
 package coom.moosik.mooo.model
 
+import android.util.Log
+
 data class Category(
-    val id: Int,
-    val name: String,
-    val subCategories: List<SubCategory> = emptyList()
-)
+    val id: String,
+    var subCategories: List<SubCategory> = emptyList()
+) : SelectableCategory {
+
+    override var isChecked: Boolean
+        get() = subCategories.map { it.isChecked }.reduce { acc, b -> (acc && b) }
+        set(value) {
+            subCategories = subCategories.toMutableList().map { it.copy(isChecked = value) }
+        }
+}

@@ -1,6 +1,7 @@
 package coom.moosik.mooo.features
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,7 @@ import androidx.lifecycle.lifecycleScope
 import coom.moosik.mooo.R
 import coom.moosik.mooo.composable.notoSansFonts
 import coom.moosik.mooo.model.Category
+import coom.moosik.mooo.model.SelectableCategory
 import coom.moosik.mooo.model.SubCategory
 import kotlinx.coroutines.launch
 
@@ -90,12 +92,12 @@ class CategorySelectDialog : DialogFragment() {
 
                 TextHeader()
 
-                val list = sharedViewModel.categories.collectAsState()
+                val list by sharedViewModel.categories.collectAsState()
 
                 CategoryListView(modifier = Modifier
                     .fillMaxSize()
                     .fillMaxHeight(),
-                    categories = list.value)
+                    categories = list.second)
             }
         }
     }
@@ -126,21 +128,68 @@ class CategorySelectDialog : DialogFragment() {
     }
 
     @Composable
-    fun CategoryListView(modifier: Modifier = Modifier, categories : List<SubCategory> = arrayListOf()) {
+    fun CategoryListView(modifier: Modifier = Modifier, categories : List<Category> = arrayListOf()) {
 
         LazyColumn(modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()) {
 
-            items(categories) {
-                SubCategoryItemView(it)
+            items(categories) { category ->
+
+                CategoryItemView(category)
+
+                category.subCategories.forEach { subCategory ->
+                    SubCategoryItemView(category, subCategory)
+                }
             }
         }
     }
 
     @Preview
     @Composable
-    fun SubCategoryItemView(subCategory: SubCategory = SubCategory(id = "명승지", name = "명승지")) {
+    fun CategoryItemView(category: Category = Category(id = "테스트")) {
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(Color.White)) {
+
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .align(Alignment.TopStart)
+                .padding(start = 15.dp, top = 15.dp)) {
+
+                Row {
+                    CustomCategoryCheckbox(modifier = Modifier.width(24.dp).height(24.dp),
+                        category = category)
+
+                    Spacer(modifier = Modifier.width(12.5.dp))
+
+                    Text(text = category.id,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .wrapContentHeight(),
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = notoSansFonts,
+                        color = colorResource(id = R.color.main)
+                    )
+                }
+
+                Row {
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
+            }
+        }
+    }
+
+    @Preview
+    @Composable
+    fun SubCategoryItemView(
+        category: Category = Category(id = "") ,subCategory: SubCategory = SubCategory(id = "명승지", name = "명승지")) {
 
         Box(modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +204,10 @@ class CategorySelectDialog : DialogFragment() {
 
                 Row {
 
-                    CustomCheckbox(modifier = Modifier.width(24.dp).height(24.dp),
+                    Spacer(modifier = Modifier.width(32.dp))
+
+                    CustomSubCategoryCheckbox(modifier = Modifier.width(24.dp).height(24.dp),
+                        category = category,
                         subCategory = subCategory)
 
                     Spacer(modifier = Modifier.width(12.5.dp))
@@ -194,16 +246,12 @@ class CategorySelectDialog : DialogFragment() {
     }
 
     @Composable
-    fun CustomCheckbox(
+    fun CustomCategoryCheckbox(
         modifier: Modifier,
-        subCategory: SubCategory
-    ) {
-        var checked by rememberSaveable { mutableStateOf(subCategory.isChecked) }
+        category: Category) {
 
         IconButton(modifier = modifier, onClick = {
-            checked = !checked
-
-            sharedViewModel.toggleCategory(subCategory.id)
+            sharedViewModel.toggleCategory(category.id)
         }) {
 
             Image(
@@ -212,7 +260,34 @@ class CategorySelectDialog : DialogFragment() {
             )
             AnimatedVisibility(
                 modifier = modifier,
-                visible = checked,
+                visible = category.isChecked,
+                exit = shrinkOut(shrinkTowards = Alignment.TopStart) + fadeOut()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.check_on),
+                    contentDescription = "Checked"
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun CustomSubCategoryCheckbox(
+        modifier: Modifier,
+        category: Category,
+        subCategory: SubCategory
+    ) {
+        IconButton(modifier = modifier, onClick = {
+            sharedViewModel.toggleSubCategory(category.id, subCategory.id)
+        }) {
+
+            Image(
+                painter = painterResource(id = R.drawable.check_off),
+                contentDescription = "Unchecked"
+            )
+            AnimatedVisibility(
+                modifier = modifier,
+                visible = subCategory.isChecked,
                 exit = shrinkOut(shrinkTowards = Alignment.TopStart) + fadeOut()
             ) {
                 Image(
