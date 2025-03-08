@@ -2,6 +2,7 @@ package coom.moosik.mooo.features
 
 import android.app.Application
 import android.content.res.AssetManager
+import android.graphics.Point
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -44,7 +45,11 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     var categories : MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
 
-    var selectedCategory : MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
+    private var selectedCategory : MutableStateFlow<Set<String>> = MutableStateFlow(setOf())
+
+    var selectedMarker : MutableStateFlow<Pair<Marker, Point>?> = MutableStateFlow(null)
+
+    var favoriteMarkers : MutableStateFlow<MutableSet<Marker>> = MutableStateFlow(mutableSetOf())
 
     init {
         allMarkers.tryEmit(loadData())
@@ -138,8 +143,25 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun selectMarker(marker: Marker?, point: Point?) {
+        selectedMarker.tryEmit(marker?.let { Pair(marker, point!!) } ?: run { null })
+    }
+
     fun updatePosition(latitude : Double, longitude: Double) {
         _currentPosition.tryEmit(Pair(System.currentTimeMillis(), LatLng(latitude, longitude)))
+    }
+
+    fun toggleHeart(marker: Marker?) {
+        Log.d("woozie", "++ toggleHeart marker: $marker")
+        marker?.let {
+            val currentFavorites = favoriteMarkers.value.toMutableSet()
+            if (currentFavorites.contains(it)) {
+                currentFavorites.remove(it)
+            } else {
+                currentFavorites.add(it)
+            }
+            favoriteMarkers.tryEmit(currentFavorites.toMutableSet())
+        }
     }
 
     fun toggleCategory(id: String) {

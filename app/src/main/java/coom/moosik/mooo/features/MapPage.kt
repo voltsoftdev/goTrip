@@ -13,14 +13,35 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
+import android.util.TypedValue
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
 import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -55,6 +76,9 @@ import java.io.InputStreamReader
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -64,16 +88,36 @@ import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.Visibility
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.maps.android.compose.CameraMoveStartedReason
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.MarkerInfoWindow
+import com.google.maps.android.compose.MarkerInfoWindowContent
+import coom.moosik.mooo.composable.notoSansFonts
 import coom.moosik.mooo.extensions.isNumeric
 import coom.moosik.mooo.extensions.showToast
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
 
@@ -188,7 +232,11 @@ class MapPage : CommonPage() {
     @Composable
     fun MapPageLayout(modifier: Modifier = Modifier) {
 
+        val scope = rememberCoroutineScope()
+
         val markers by model.markers.collectAsState()
+
+        val selectedMarker by model.selectedMarker.collectAsState()
 
         val currentPosition by model.currentPosition.collectAsState()
 
@@ -196,20 +244,23 @@ class MapPage : CommonPage() {
             position = CameraPosition.fromLatLngZoom(currentPosition.second, 15f)
         }
 
+        val cameraMoveStartedReason by remember { derivedStateOf { cameraPositionState.cameraMoveStartedReason } }
+
+        LaunchedEffect(cameraMoveStartedReason) {
+            snapshotFlow { cameraMoveStartedReason }.collectLatest {
+                if (it == CameraMoveStartedReason.GESTURE) {
+                    model.selectMarker(null, null)
+                }
+            }
+        }
+
         Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = "가자구요") },
-                )
-            },
             content = { paddingValues ->
 
-                ConstraintLayout(modifier = modifier
+                Box(modifier = modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .background(Color.White)) {
-
-                    val titleBarRef = createRef()
 
                     LaunchedEffect(currentPosition) {
                         cameraPositionState.position = CameraPosition.fromLatLngZoom(currentPosition.second, 16f)
@@ -217,11 +268,14 @@ class MapPage : CommonPage() {
 
                     GoogleMap(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .constrainAs(titleBarRef) {
-                                absoluteLeft.linkTo(parent.absoluteLeft)
-                                top.linkTo(parent.top)
-                            },
+                            .fillMaxSize(),
+                        googleMapOptionsFactory = {
+                            GoogleMapOptions().mapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL)
+                        },
+                        onMapClick = {
+                            model.selectMarker(null, null)
+                        },
+
                         cameraPositionState = cameraPositionState) {
 
                         for (marker in markers) {
@@ -230,10 +284,31 @@ class MapPage : CommonPage() {
                                 val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
 
                                 val latLng = LatLng(marker.latitude, marker.longitude)
-                                Marker(
+
+                                MarkerInfoWindow(
                                     state = MarkerState(position = latLng),
-                                    title = marker.irm1,
-                                    icon = icon
+                                    icon = icon,
+                                    onClick = { selectedMarker ->
+
+
+                                        scope.launch {
+                                            cameraPositionState.animate(
+                                                update = CameraUpdateFactory.newCameraPosition(
+                                                    CameraPosition.fromLatLngZoom(selectedMarker.position, 16f))
+                                            )
+                                        }
+
+                                        scope.launch {
+                                            delay(1000)
+
+                                            val projection = cameraPositionState.projection
+                                            val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
+
+                                            model.selectMarker(marker, anchorPoint)
+                                        }
+
+                                        return@MarkerInfoWindow true
+                                    },
                                 )
                             }
                         }
@@ -244,15 +319,13 @@ class MapPage : CommonPage() {
                         )
                     }
 
-                    val menuPositionButtonRef = createRef()
                     FloatingActionButton(
                         modifier = Modifier
-                            .width(48.dp).height(48.dp)
-                            .constrainAs(menuPositionButtonRef) {
-                                absoluteRight.linkTo(parent.absoluteRight, margin = 15.dp)
-                                top.linkTo(parent.top, margin = 15.dp)
-                            },
+                            .width(48.dp).height(48.dp).offset(x= (-7.5).dp, y = 7.5.dp)
+                            .align(Alignment.TopEnd),
                         onClick = {
+                            model.selectMarker(null, null)
+
                             CategorySelectDialog().show(supportFragmentManager, "")
                         },
                         backgroundColor = MaterialTheme.colors.primary,
@@ -263,15 +336,13 @@ class MapPage : CommonPage() {
                         )
                     }
 
-                    val currentPositionButtonRef = createRef()
                     FloatingActionButton(
                         modifier = Modifier
-                            .width(32.dp).height(32.dp)
-                            .constrainAs(currentPositionButtonRef) {
-                                absoluteLeft.linkTo(parent.absoluteLeft, margin = 15.dp)
-                                top.linkTo(parent.top, margin = 15.dp)
-                            },
+                            .width(32.dp).height(32.dp).offset(x= 12.5.dp, y = 12.5.dp)
+                            .align(Alignment.TopStart),
                         onClick = {
+                            model.selectMarker(null, null)
+
                             requestLocationReadPermission { isGranted ->
                                 if (isGranted) {
                                     loadDeviceLocation()
@@ -286,14 +357,60 @@ class MapPage : CommonPage() {
                         )
                     }
 
-                    val currentPositionButtonLabelRef = createRef()
-                    Text(text = "현재 위치로 이동하기",
-                        fontSize = 14.sp,
-                        modifier = Modifier.constrainAs(currentPositionButtonLabelRef) {
-                        absoluteLeft.linkTo(currentPositionButtonRef.absoluteRight, margin = 7.5.dp)
-                        top.linkTo(currentPositionButtonRef.top)
-                        bottom.linkTo(currentPositionButtonRef.bottom)
-                    })
+                    selectedMarker?.let { selectedMarker ->
+
+                        val offsetX = remember { mutableIntStateOf(0) }
+                        val offsetY = remember { mutableIntStateOf(0) }
+
+                        Card(modifier = Modifier.background(Color.Transparent)
+                            .align(Alignment.TopStart).onSizeChanged {
+                                offsetX.intValue = it.width / 2
+                                offsetY.intValue = it.height +
+                                        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60f, resources.displayMetrics).toInt()
+                            }.absoluteOffset {
+                                IntOffset(
+                                    selectedMarker.second.x - offsetX.intValue,
+                                    selectedMarker.second.y - offsetY.intValue)
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            backgroundColor = Color.White,
+                            elevation = 5.dp,) {
+
+                            Row(modifier = Modifier
+                                .wrapContentWidth()
+                                .wrapContentHeight()
+                                .padding(7.5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.5.dp)) {
+
+                                var imageResource by remember { mutableIntStateOf(R.drawable.heart_off) }
+
+                                LaunchedEffect(model.favoriteMarkers) {
+                                    model.favoriteMarkers.collectLatest { favoriteMarkers ->
+                                        imageResource = if (favoriteMarkers.contains(selectedMarker.first))
+                                            R.drawable.heart else R.drawable.heart_off
+                                    }
+                                }
+
+                                Text(selectedMarker.first.irm1,
+                                    color = Color.Black,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = notoSansFonts,)
+
+                                IconButton(onClick = {
+                                    model.toggleHeart(selectedMarker.first)
+                                }) {
+                                    Icon(
+                                        modifier = Modifier.height(24.dp).width(24.dp),
+                                        painter = painterResource(id = imageResource), // 이미지 리소스
+                                        contentDescription = null,
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         )
