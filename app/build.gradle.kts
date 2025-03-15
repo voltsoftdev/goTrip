@@ -80,4 +80,6 @@ dependencies {
     implementation("com.opencsv:opencsv:5.6")
     debugImplementation(libs.androidx.ui.tooling)
 
+    implementation(libs.serialization.json)
+
 }

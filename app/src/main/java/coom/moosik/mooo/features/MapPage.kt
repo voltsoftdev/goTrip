@@ -127,7 +127,7 @@ typealias PermissionListenerForResult = (requestCode: Int, permissions: Array<ou
 
 class MapPage : CommonPage() {
 
-    val model : MapPageViewModel by viewModels()
+    private val model : MapPageViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -236,6 +236,8 @@ class MapPage : CommonPage() {
 
         val markers by model.markers.collectAsState()
 
+        val highlightsMarkers by model.highlightsMarkers.collectAsState()
+
         val selectedMarker by model.selectedMarker.collectAsState()
 
         val currentPosition by model.currentPosition.collectAsState()
@@ -279,10 +281,10 @@ class MapPage : CommonPage() {
                         cameraPositionState = cameraPositionState) {
 
                         for (marker in markers) {
+
                             val iconIdentifier = resources.getIdentifier(marker.type, "drawable", packageName)
                             if (iconIdentifier != 0) {
                                 val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
-
                                 val latLng = LatLng(marker.latitude, marker.longitude)
 
                                 MarkerInfoWindow(
@@ -305,6 +307,41 @@ class MapPage : CommonPage() {
                                             val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
 
                                             model.selectMarker(marker, anchorPoint)
+                                        }
+
+                                        return@MarkerInfoWindow true
+                                    },
+                                )
+                            }
+                        }
+
+                        for (highlightsMarker in highlightsMarkers) {
+
+                            val iconIdentifier = resources.getIdentifier("x"+highlightsMarker.type, "drawable", packageName)
+                            if (iconIdentifier != 0) {
+                                val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
+                                val latLng = LatLng(highlightsMarker.latitude, highlightsMarker.longitude)
+
+                                MarkerInfoWindow(
+                                    state = MarkerState(position = latLng),
+                                    icon = icon,
+                                    onClick = { selectedMarker ->
+
+
+                                        scope.launch {
+                                            cameraPositionState.animate(
+                                                update = CameraUpdateFactory.newCameraPosition(
+                                                    CameraPosition.fromLatLngZoom(selectedMarker.position, 16f))
+                                            )
+                                        }
+
+                                        scope.launch {
+                                            delay(1000)
+
+                                            val projection = cameraPositionState.projection
+                                            val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
+
+                                            model.selectMarker(highlightsMarker, anchorPoint)
                                         }
 
                                         return@MarkerInfoWindow true

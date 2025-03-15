@@ -1,5 +1,8 @@
 package coom.moosik.mooo.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Marker(
     var latitude : Double = 0.0,
     var longitude : Double = 0.0,

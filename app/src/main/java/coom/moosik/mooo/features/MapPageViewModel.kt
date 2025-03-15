@@ -3,6 +3,7 @@ package coom.moosik.mooo.features
 import android.app.Application
 import android.content.res.AssetManager
 import android.graphics.Point
+import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -15,7 +16,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.opencsv.CSVReader
 import com.opencsv.exceptions.CsvException
 import coom.moosik.mooo.MooSikApp
+import coom.moosik.mooo.extensions.getPreferenceString
 import coom.moosik.mooo.extensions.isNumeric
+import coom.moosik.mooo.extensions.putPreference
 import coom.moosik.mooo.model.Category
 import coom.moosik.mooo.model.Marker
 import coom.moosik.mooo.model.SelectableCategory
@@ -23,10 +26,16 @@ import coom.moosik.mooo.model.SubCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import java.io.IOException
 import java.io.InputStreamReader
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class MapPageViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -49,10 +58,15 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     var selectedMarker : MutableStateFlow<Pair<Marker, Point>?> = MutableStateFlow(null)
 
-    var favoriteMarkers : MutableStateFlow<MutableSet<Marker>> = MutableStateFlow(mutableSetOf())
+    val favoriteMarkers : MutableStateFlow<MutableSet<Marker>> = MutableStateFlow(mutableSetOf())
+
+    val highlightsMarkers : MutableStateFlow<List<Marker>> = MutableStateFlow(emptyList())
 
     init {
         allMarkers.tryEmit(loadData())
+
+        val favoriteMarkersString = getApplication<MooSikApp>().getPreferenceString("favoriteMarkers")
+        favoriteMarkers.tryEmit(favoriteMarkersString.jsonArrayToMarkers())
 
         val list = arrayListOf<Category>()
 
@@ -141,6 +155,20 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                 _markers.tryEmit(markers)
             }
         }
+
+        viewModelScope.launch {
+            combine(selectedCategory, favoriteMarkers) { selectedCategory, favoriteMarkers ->
+                val markers : ArrayList<Marker> = arrayListOf()
+                favoriteMarkers.forEach { marker ->
+                    if (selectedCategory.contains(marker.type)) {
+                        markers.add(marker)
+                    }
+                }
+                markers
+            }.collectLatest {
+                highlightsMarkers.tryEmit(it)
+            }
+        }
     }
 
     fun selectMarker(marker: Marker?, point: Point?) {
@@ -152,7 +180,6 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun toggleHeart(marker: Marker?) {
-        Log.d("woozie", "++ toggleHeart marker: $marker")
         marker?.let {
             val currentFavorites = favoriteMarkers.value.toMutableSet()
             if (currentFavorites.contains(it)) {
@@ -162,6 +189,9 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
             }
             favoriteMarkers.tryEmit(currentFavorites.toMutableSet())
         }
+
+        getApplication<MooSikApp>().putPreference(
+            "favoriteMarkers", favoriteMarkers.value.markersToJsonArray())
     }
 
     fun toggleCategory(id: String) {
@@ -220,5 +250,14 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         return markers
+    }
+
+    private fun MutableSet<Marker>.markersToJsonArray(): String {
+        return Json.encodeToString(this.toList())
+    }
+
+    private fun String.jsonArrayToMarkers(): MutableSet<Marker> {
+        return if (TextUtils.isEmpty(this))
+            mutableSetOf() else Json.decodeFromString<List<Marker>>(this).toMutableSet()
     }
 }

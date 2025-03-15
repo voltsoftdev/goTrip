@@ -140,7 +140,69 @@ fun Context.getLocalizedString(name : String) : String {
     }
 }
 
+const val PREFERENCE_NAME = "goTrip_preference"
+
 fun Activity.getRootView() : View {
     return window.decorView.findViewById(android.R.id.content)
+}
+
+fun Context.getPreferenceString(name: String) : String {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences.getString(name, "") ?: ""
+}
+
+fun Context.getPreferenceBoolean(name: String) : Boolean {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean(name, false)
+}
+
+fun Context.getPreferenceLong(name: String, default : Long) : Long {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences.getLong(name, default)
+}
+
+fun Context.getPreferenceFloat(name: String, default : Float) : Float {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences.getFloat(name, default)
+}
+
+@SuppressLint("CommitPrefEdits")
+fun Context.putPreference(name: String, value : String?) {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString(name, value)
+    editor.apply()
+}
+
+@SuppressLint("CommitPrefEdits")
+fun Context.putPreference(name: String, value : Boolean) {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putBoolean(name, value)
+    editor.apply()
+}
+
+@SuppressLint("CommitPrefEdits")
+fun Context.putPreference(name: String, value : Int) {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putInt(name, value)
+    editor.apply()
+}
+
+@SuppressLint("CommitPrefEdits")
+fun Context.putPreference(name: String, value : Float) {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putFloat(name, value)
+    editor.apply()
+}
+
+@SuppressLint("CommitPrefEdits")
+fun Context.putPreference(name: String, value : Long) {
+    val sharedPreferences = this.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putLong(name, value)
+    editor.apply()
 }
 
