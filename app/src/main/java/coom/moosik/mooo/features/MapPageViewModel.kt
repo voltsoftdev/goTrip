@@ -244,6 +244,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                     Marker(
                     latitude = content[0].toDouble(),
                     longitude = content[1].toDouble(),
+                    kung = content[6],
                     type = content[4],
                     irm1 = content[7])
                 )

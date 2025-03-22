@@ -6,9 +6,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.text.TextUtils
@@ -24,6 +26,10 @@ import androidx.core.content.ContextCompat
 import java.security.MessageDigest
 import java.util.Locale
 
+fun Context.openBrowser(url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    this.startActivity(intent)
+}
 
 fun Context.inflate(resourceId: Int, viewGroup: ViewGroup?, attachRoot: Boolean = false) : View? =
     LayoutInflater.from(this).inflate(resourceId, viewGroup, attachRoot)

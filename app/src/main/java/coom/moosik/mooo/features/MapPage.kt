@@ -116,6 +116,7 @@ import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerInfoWindowContent
 import coom.moosik.mooo.composable.notoSansFonts
 import coom.moosik.mooo.extensions.isNumeric
+import coom.moosik.mooo.extensions.openBrowser
 import coom.moosik.mooo.extensions.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -429,11 +430,16 @@ class MapPage : CommonPage() {
                                     }
                                 }
 
-                                Text(selectedMarker.first.irm1,
-                                    color = Color.Black,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = notoSansFonts,)
+                                ClickableText(
+                                    selectedMarkerText = selectedMarker.first.irm1,
+                                    onTextClick = {
+                                        var tail = selectedMarker.first.kung
+                                        if (!tail.startsWith("korea")) {
+                                            tail = "korea/${selectedMarker.first.kung}"
+                                        }
+                                        openBrowser("http://gajaguyo.com/wp/$tail")
+                                    }
+                                )
 
                                 IconButton(onClick = {
                                     model.toggleHeart(selectedMarker.first)
@@ -450,6 +456,21 @@ class MapPage : CommonPage() {
                     }
                 }
             }
+        )
+    }
+
+    @Composable
+    fun ClickableText(
+        selectedMarkerText: String,
+        onTextClick: () -> Unit
+    ) {
+        Text(
+            text = selectedMarkerText,
+            color = Color.Black,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            fontFamily = notoSansFonts,
+            modifier = Modifier.clickable { onTextClick() } // 클릭 이벤트 추가
         )
     }
 }

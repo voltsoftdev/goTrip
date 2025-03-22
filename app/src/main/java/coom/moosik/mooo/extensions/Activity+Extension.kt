@@ -112,6 +112,7 @@ fun Context.showToast(resourceId: Int) =
 
 fun Context.showToast(text: String) =
     Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+
 fun Context.showDialog(
     vararg messages : String?, buttonCount : CommonDialog.ButtonCount = CommonDialog.ButtonCount.ONE, listener : ((confirmed : Boolean) -> Unit)? = null)
 {
