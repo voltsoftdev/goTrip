@@ -243,6 +243,10 @@ class MapPage : CommonPage() {
 
         val currentPosition by model.currentPosition.collectAsState()
 
+        val selectedLanguage by model.selectedLanguage.collectAsState()
+
+        val languageSelectMode by model.languageSelectMode.collectAsState()
+
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(currentPosition.second, 15f)
         }
@@ -292,7 +296,6 @@ class MapPage : CommonPage() {
                                     state = MarkerState(position = latLng),
                                     icon = icon,
                                     onClick = { selectedMarker ->
-
 
                                         scope.launch {
                                             cameraPositionState.animate(
@@ -395,6 +398,30 @@ class MapPage : CommonPage() {
                         )
                     }
 
+                    if (languageSelectMode) {
+                        LanguageSelectLayout(modifier = Modifier
+                            .offset(x= 12.5.dp, y = (-12.5).dp)
+                            .align(Alignment.BottomStart),
+                            onLanguageClick = { language ->
+                                model.selectedLanguage.tryEmit(language)
+                                model.languageSelectMode.tryEmit(false)
+                        })
+                    }
+                    else
+                    {
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .width(46.dp).height(46.dp).offset(x= 12.5.dp, y = (-12.5).dp)
+                                .align(Alignment.BottomStart),
+                            onClick = {
+                                model.languageSelectMode.tryEmit(true)
+                            },
+                            backgroundColor = MaterialTheme.colors.primary,
+                        ) {
+                            Text(selectedLanguage)
+                        }
+                    }
+
                     selectedMarker?.let { selectedMarker ->
 
                         val offsetX = remember { mutableIntStateOf(0) }
@@ -430,8 +457,10 @@ class MapPage : CommonPage() {
                                     }
                                 }
 
+                                val selectedMarkerText = if (selectedLanguage == "한국어") selectedMarker.first.irm1 else selectedMarker.first.irm3
+
                                 ClickableText(
-                                    selectedMarkerText = selectedMarker.first.irm1,
+                                    selectedMarkerText = selectedMarkerText,
                                     onTextClick = {
                                         var tail = selectedMarker.first.kung
                                         if (!tail.startsWith("korea")) {

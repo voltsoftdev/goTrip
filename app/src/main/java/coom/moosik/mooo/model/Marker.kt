@@ -10,7 +10,8 @@ data class Marker(
     var type : String = "",
     var tema : String = "",
     var kung : String = "",
-    var irm1 : String = ""
+    var irm1 : String = "",
+    var irm3 : String = ""
 ) {
 
 }

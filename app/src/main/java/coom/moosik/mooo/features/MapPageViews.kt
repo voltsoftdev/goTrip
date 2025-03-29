@@ -1,6 +1,7 @@
 package coom.moosik.mooo.features
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,12 +20,61 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coom.moosik.mooo.composable.notoSansFonts
 import coom.moosik.mooo.R
+
+@Preview
+@Composable
+fun LanguageSelectLayout(modifier: Modifier = Modifier, onLanguageClick: (String) -> Unit = {}) = ConstraintLayout(modifier = modifier
+    .width(85.dp)
+    .wrapContentHeight()) {
+
+    val containerRef = createRef()
+
+    Column(modifier = Modifier
+        .constrainAs(containerRef) {
+            absoluteLeft.linkTo(parent.absoluteLeft)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+        }
+        .wrapContentWidth()
+        .wrapContentHeight()
+        .background(Color.Transparent),
+        horizontalAlignment = Alignment.CenterHorizontally // Column 내부 요소들을 가로 방향으로 가운데 정렬
+    ) {
+
+        Button(
+            onClick = {
+                onLanguageClick("한국어")
+            },
+            modifier = Modifier.fillMaxWidth() // 버튼 너비를 Column 너비에 맞춤
+        ) {
+            Text(
+                text = "한국어",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        Spacer(modifier = Modifier
+            .width(7.5.dp)
+            .height(1.5.dp))
+
+        Button(
+            onClick = {
+                onLanguageClick("영어")
+            },
+            modifier = Modifier.fillMaxWidth() // 버튼 너비를 Column 너비에 맞춤
+        ) {
+            Text("영어")
+        }
+    }
+}
 
 @Preview
 @Composable

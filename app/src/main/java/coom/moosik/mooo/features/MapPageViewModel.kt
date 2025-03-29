@@ -62,6 +62,9 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     val highlightsMarkers : MutableStateFlow<List<Marker>> = MutableStateFlow(emptyList())
 
+    val selectedLanguage : MutableStateFlow<String> = MutableStateFlow("한국어")
+    val languageSelectMode : MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     init {
         allMarkers.tryEmit(loadData())
 
@@ -246,7 +249,8 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                     longitude = content[1].toDouble(),
                     kung = content[6],
                     type = content[4],
-                    irm1 = content[7])
+                    irm1 = content[7],
+                    irm3 = content[7] + "(EN)")
                 )
             }
         }
