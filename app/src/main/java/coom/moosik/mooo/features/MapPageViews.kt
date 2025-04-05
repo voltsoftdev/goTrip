@@ -1,25 +1,37 @@
 package coom.moosik.mooo.features
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,31 +60,60 @@ fun LanguageSelectLayout(modifier: Modifier = Modifier, onLanguageClick: (String
         horizontalAlignment = Alignment.CenterHorizontally // Column 내부 요소들을 가로 방향으로 가운데 정렬
     ) {
 
-        Button(
-            onClick = {
-                onLanguageClick("한국어")
-            },
-            modifier = Modifier.fillMaxWidth() // 버튼 너비를 Column 너비에 맞춤
-        ) {
-            Text(
-                text = "한국어",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+        BorderButton(modifier = Modifier.fillMaxWidth(), text = "한국어") {
+            onLanguageClick("한국어")
         }
 
         Spacer(modifier = Modifier
             .width(7.5.dp)
             .height(1.5.dp))
 
-        Button(
-            onClick = {
-                onLanguageClick("영어")
-            },
-            modifier = Modifier.fillMaxWidth() // 버튼 너비를 Column 너비에 맞춤
-        ) {
-            Text("영어")
+        BorderButton(modifier = Modifier.fillMaxWidth(), text = "영어") {
+            onLanguageClick("영어")
         }
+    }
+}
+
+@Composable
+fun BorderButton(modifier : Modifier, text : String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(0.dp), // 직사각형 모양
+        border = BorderStroke(1.dp, Color.Black),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.White,
+            contentColor = Color.Blue // 텍스트 색상
+        ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp) // 텍스트 주변 패딩
+    ) {
+        Text(text = text,
+            maxLines = 1,
+            style = TextStyle(
+                fontWeight = FontWeight.Bold,
+                textDecoration = TextDecoration.Underline))
+    }
+}
+
+@Composable
+fun BorderedTextField(modifier: Modifier ,onTextChanged: (String) -> Unit ) {
+    Column(
+        modifier = modifier
+            .border(1.dp, Color.Black, RoundedCornerShape(0.dp)) // 검은색 테두리
+            .background(Color.White) // 흰색 배경
+    ) {
+        // var textValue by remember { mutableStateOf("") }
+
+        TextField(
+            value = "",
+            onValueChange = {
+                onTextChanged(it) // 텍스트 변경 시 콜백 호출
+            },
+            placeholder = { Text("검색할 장소를 입력해주세요") },
+            label = { Text("검색할 장소를 입력해주세요") }, // 힌트 또는 라벨 (선택 사항)
+            modifier = Modifier.fillMaxWidth()
+        )
+        // 다른 뷰들을 이 Column 내부에 추가할 수 있습니다.
     }
 }
 

@@ -20,6 +20,7 @@ import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -102,6 +103,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -279,11 +281,9 @@ class MapPage : CommonPage() {
                         googleMapOptionsFactory = {
                             GoogleMapOptions().mapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL)
                         },
-                        onMapClick = {
-                            model.selectMarker(null, null)
-                        },
-
-                        cameraPositionState = cameraPositionState) {
+                        onMapClick = { model.selectMarker(null, null) },
+                        cameraPositionState = cameraPositionState)
+                    {
 
                         for (marker in markers) {
 
@@ -331,7 +331,6 @@ class MapPage : CommonPage() {
                                     icon = icon,
                                     onClick = { selectedMarker ->
 
-
                                         scope.launch {
                                             cameraPositionState.animate(
                                                 update = CameraUpdateFactory.newCameraPosition(
@@ -356,51 +355,40 @@ class MapPage : CommonPage() {
 
                         Marker(
                             state = MarkerState(position = currentPosition.second),
-                            title = "현재 위치",
+                            title = " 현재 위치 ",
                         )
                     }
 
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .width(48.dp).height(48.dp).offset(x= (-7.5).dp, y = 7.5.dp)
-                            .align(Alignment.TopEnd),
-                        onClick = {
-                            model.selectMarker(null, null)
+                    BorderButton(modifier =  Modifier.width(100.dp)
+                        .align(Alignment.TopStart).offset(x= 7.5.dp, y = 7.5.dp), text = " 검 색 ") {
+                        model.selectMarker(null, null)
 
-                            CategorySelectDialog().show(supportFragmentManager, "")
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Menu,
-                            contentDescription = "Menu"
-                        )
                     }
 
-                    FloatingActionButton(
-                        modifier = Modifier
-                            .width(32.dp).height(32.dp).offset(x= 12.5.dp, y = 12.5.dp)
-                            .align(Alignment.TopStart),
-                        onClick = {
-                            model.selectMarker(null, null)
+                    BorderButton(modifier =  Modifier.width(100.dp)
+                        .align(Alignment.TopStart).offset(x= 7.5.dp, y = 65.dp), text = " 현재 위치 ") {
 
-                            requestLocationReadPermission { isGranted ->
-                                if (isGranted) {
-                                    loadDeviceLocation()
-                                }
+                        model.selectMarker(null, null)
+
+                        requestLocationReadPermission { isGranted ->
+                            if (isGranted) {
+                                loadDeviceLocation()
                             }
-                        },
-                        backgroundColor = MaterialTheme.colors.primary,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.GpsFixed,
-                            contentDescription = "Menu"
-                        )
+                        }
                     }
+
+                    BorderButton(modifier =  Modifier.wrapContentWidth().offset(x= (-7.5).dp, y = 7.5.dp)
+                        .align(Alignment.TopEnd), text = " 목 록 ") {
+                        model.selectMarker(null, null)
+
+                        CategorySelectDialog().show(supportFragmentManager, "")
+                    }
+
+
 
                     if (languageSelectMode) {
                         LanguageSelectLayout(modifier = Modifier
-                            .offset(x= 12.5.dp, y = (-12.5).dp)
+                            .offset(x= (7.5).dp, y = (-7.5).dp)
                             .align(Alignment.BottomStart),
                             onLanguageClick = { language ->
                                 model.selectedLanguage.tryEmit(language)
@@ -409,16 +397,9 @@ class MapPage : CommonPage() {
                     }
                     else
                     {
-                        FloatingActionButton(
-                            modifier = Modifier
-                                .width(46.dp).height(46.dp).offset(x= 12.5.dp, y = (-12.5).dp)
-                                .align(Alignment.BottomStart),
-                            onClick = {
-                                model.languageSelectMode.tryEmit(true)
-                            },
-                            backgroundColor = MaterialTheme.colors.primary,
-                        ) {
-                            Text(selectedLanguage)
+                        BorderButton(modifier =  Modifier.wrapContentWidth().offset(x= (7.5).dp, y = (-7.5).dp)
+                            .align(Alignment.BottomStart), text = selectedLanguage) {
+                            model.languageSelectMode.tryEmit(true)
                         }
                     }
 
@@ -453,7 +434,7 @@ class MapPage : CommonPage() {
                                 LaunchedEffect(model.favoriteMarkers) {
                                     model.favoriteMarkers.collectLatest { favoriteMarkers ->
                                         imageResource = if (favoriteMarkers.contains(selectedMarker.first))
-                                            R.drawable.heart else R.drawable.heart_off
+                                            R.drawable.check_on else R.drawable.check_off
                                     }
                                 }
 
@@ -470,9 +451,7 @@ class MapPage : CommonPage() {
                                     }
                                 )
 
-                                IconButton(onClick = {
-                                    model.toggleHeart(selectedMarker.first)
-                                }) {
+                                IconButton(onClick = { model.toggleHeart(selectedMarker.first)}) {
                                     Icon(
                                         modifier = Modifier.height(24.dp).width(24.dp),
                                         painter = painterResource(id = imageResource), // 이미지 리소스

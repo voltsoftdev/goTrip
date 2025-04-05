@@ -4,5 +4,5 @@ data class SubCategory(
     val id: String,
     val img: String,
     val name: String,
-    override var isChecked : Boolean = false,
+    override var isChecked : Boolean = true,
 ) : SelectableCategory
