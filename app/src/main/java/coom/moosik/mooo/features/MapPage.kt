@@ -99,6 +99,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.PointMode.Companion.Polygon
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -112,10 +113,12 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerInfoWindowContent
+import com.google.maps.android.compose.Polygon
 import coom.moosik.mooo.composable.notoSansFonts
 import coom.moosik.mooo.extensions.isNumeric
 import coom.moosik.mooo.extensions.openBrowser
@@ -238,19 +241,28 @@ class MapPage : CommonPage() {
         val scope = rememberCoroutineScope()
 
         val markers by model.markers.collectAsState()
-
         val highlightsMarkers by model.highlightsMarkers.collectAsState()
 
         val selectedMarker by model.selectedMarker.collectAsState()
-
-        val currentPosition by model.currentPosition.collectAsState()
-
         val selectedLanguage by model.selectedLanguage.collectAsState()
 
         val languageSelectMode by model.languageSelectMode.collectAsState()
 
+        val currentPosition by model.currentPosition.collectAsState()
+
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(currentPosition.second, 15f)
+        }
+
+        val cameraZoomLevel by remember { derivedStateOf { cameraPositionState.position.zoom } }
+        val visibleRegion = remember { mutableStateOf<LatLngBounds?>(null) }
+
+        // 카메라 위치가 변경될 때마다 visibleRegion 업데이트
+        LaunchedEffect(cameraPositionState.position) {
+            snapshotFlow { cameraPositionState.projection?.visibleRegion }.collectLatest { region ->
+                // visibleRegion.value = region
+                region?.let { model.visibleRegion.tryEmit(it) }
+            }
         }
 
         val cameraMoveStartedReason by remember { derivedStateOf { cameraPositionState.cameraMoveStartedReason } }
@@ -285,10 +297,30 @@ class MapPage : CommonPage() {
                         cameraPositionState = cameraPositionState)
                     {
 
-                        for (marker in markers) {
+//                        if (cameraZoomLevel > 18f) {
+//                            val polygonPoints = listOf(
+//                                LatLng(37.5665, 126.9780), // 서울
+//                                LatLng(35.1796, 129.0756), // 부산
+//                                LatLng(36.3504, 127.3845), // 대전
+//                                LatLng(35.8714, 128.6014), // 대구
+//                                LatLng(37.5665, 126.9780),
+//                            )
+//                            Polygon(
+//                                points = polygonPoints,
+//                                fillColor = Color.Blue.copy(alpha = 0.3f),
+//                                strokeColor = Color.Blue,
+//                                strokeWidth = 5f
+//                            )
+//                        }
+//                        else
+//                        {
+//
+//                        }
 
+                        for (marker in markers) {
                             val iconIdentifier = resources.getIdentifier(marker.type, "drawable", packageName)
                             if (iconIdentifier != 0) {
+
                                 val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
                                 val latLng = LatLng(marker.latitude, marker.longitude)
 
@@ -385,7 +417,6 @@ class MapPage : CommonPage() {
                     }
 
 
-
                     if (languageSelectMode) {
                         LanguageSelectLayout(modifier = Modifier
                             .offset(x= (7.5).dp, y = (-7.5).dp)
@@ -429,16 +460,20 @@ class MapPage : CommonPage() {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(4.5.dp)) {
 
-                                var imageResource by remember { mutableIntStateOf(R.drawable.heart_off) }
+                                var imageResource by remember { mutableIntStateOf(R.drawable.check_off) }
+                                var favoriteState by remember { mutableStateOf("찜하기") }
 
                                 LaunchedEffect(model.favoriteMarkers) {
                                     model.favoriteMarkers.collectLatest { favoriteMarkers ->
                                         imageResource = if (favoriteMarkers.contains(selectedMarker.first))
                                             R.drawable.check_on else R.drawable.check_off
+                                        favoriteState = if (favoriteMarkers.contains(selectedMarker.first))
+                                            "찜해제" else "찜하기"
                                     }
                                 }
 
-                                val selectedMarkerText = if (selectedLanguage == "한국어") selectedMarker.first.irm1 else selectedMarker.first.irm3
+                                val selectedMarkerText = if (selectedLanguage == "한국어")
+                                    selectedMarker.first.irm1 else selectedMarker.first.irm3
 
                                 ClickableText(
                                     selectedMarkerText = selectedMarkerText,
@@ -451,13 +486,18 @@ class MapPage : CommonPage() {
                                     }
                                 )
 
-                                IconButton(onClick = { model.toggleHeart(selectedMarker.first)}) {
-                                    Icon(
-                                        modifier = Modifier.height(24.dp).width(24.dp),
-                                        painter = painterResource(id = imageResource), // 이미지 리소스
-                                        contentDescription = null,
-                                        tint = Color.Unspecified
-                                    )
+//                                IconButton(onClick = { model.toggleHeart(selectedMarker.first) }) {
+//                                    Icon(
+//                                        modifier = Modifier.height(24.dp).width(24.dp),
+//                                        painter = painterResource(id = imageResource), // 이미지 리소스
+//                                        contentDescription = null,
+//                                        tint = Color.Unspecified
+//                                    )
+//                                }
+                                TextButton(
+                                    modifier =  Modifier.wrapContentWidth(),
+                                    text = favoriteState) {
+                                    model.toggleHeart(selectedMarker.first)
                                 }
                             }
                         }

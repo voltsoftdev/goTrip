@@ -13,6 +13,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.VisibleRegion
 import com.opencsv.CSVReader
 import com.opencsv.exceptions.CsvException
 import coom.moosik.mooo.MooSikApp
@@ -65,8 +66,19 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     val selectedLanguage : MutableStateFlow<String> = MutableStateFlow("한국어")
     val languageSelectMode : MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    val visibleRegion: MutableStateFlow<VisibleRegion?> = MutableStateFlow(null)
+
     init {
-        allMarkers.tryEmit(loadData())
+
+        viewModelScope.launch {
+            readMarkersFromServer().collectLatest { result ->
+                result?.let {
+                    allMarkers.tryEmit(it)
+                } ?: run {
+                    allMarkers.tryEmit(loadData())
+                }
+            }
+        }
 
         val favoriteMarkersString = getApplication<MooSikApp>().getPreferenceString("favoriteMarkers")
         favoriteMarkers.tryEmit(favoriteMarkersString.jsonArrayToMarkers())
@@ -147,15 +159,24 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         }
 
         viewModelScope.launch {
-            selectedCategory.collectLatest { selected ->
-                val markers : ArrayList<Marker> = arrayListOf()
+            combine(selectedCategory, allMarkers, visibleRegion) { selectedCategory, allMarkers, visibleRegion ->
+                Triple(selectedCategory, allMarkers, visibleRegion)
+            }.collectLatest { triple ->
 
-                allMarkers.value.forEach { marker ->
-                    if (selected.contains(marker.type)) {
+                val selectedCategory = triple.first
+                val allMarkers = triple.second
+                val visibleRegion = triple.third
+                val currentBounds = visibleRegion?.latLngBounds
+
+                val markers : ArrayList<Marker> = arrayListOf()
+                allMarkers.forEach { marker ->
+                    val markerLatLng = LatLng(marker.latitude, marker.longitude)
+                    if (currentBounds?.contains(markerLatLng) == true && selectedCategory.contains(marker.type)) {
                         markers.add(marker)
                     }
                 }
                 _markers.tryEmit(markers)
+                Log.d("woozie", "++ markers count:${markers.size} ")
             }
         }
 

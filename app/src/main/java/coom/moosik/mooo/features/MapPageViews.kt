@@ -96,6 +96,27 @@ fun BorderButton(modifier : Modifier, text : String, onClick: () -> Unit) {
 }
 
 @Composable
+fun TextButton(modifier : Modifier, text : String, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(0.dp), // 직사각형 모양
+        border = BorderStroke(0.dp, Color.Black),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.White,
+            contentColor = Color.Blue // 텍스트 색상
+        ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp) // 텍스트 주변 패딩
+    ) {
+        Text(text = text,
+            maxLines = 1,
+            style = TextStyle(
+                fontWeight = FontWeight.Bold,
+                textDecoration = TextDecoration.Underline))
+    }
+}
+
+@Composable
 fun BorderedTextField(modifier: Modifier ,onTextChanged: (String) -> Unit ) {
     Column(
         modifier = modifier

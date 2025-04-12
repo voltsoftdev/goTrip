@@ -59,6 +59,10 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.viewmodel.compose)
 
+    implementation(libs.retrofit.core) // Retrofit 코어 사용
+    implementation(libs.retrofit.converter.gson) // Gson 컨버터 사용
+    implementation(libs.retrofit.converter.jackson) // Jackson 컨버터 사용
+
     implementation(libs.material)
     implementation(libs.androidx.ui.tooling.preview.android)
     testImplementation(libs.junit)
