@@ -2,91 +2,35 @@ package coom.moosik.mooo.features
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.res.AssetManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
-import androidx.compose.material.FabPosition
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.opencsv.CSVReader
-import com.opencsv.exceptions.CsvException
-import coom.moosik.mooo.R
-import coom.moosik.mooo.composable.ViewModelDemoTheme
-import coom.moosik.mooo.extensions.isExplicitDeniedPermissions
-import coom.moosik.mooo.extensions.isPermissionGranted
-import coom.moosik.mooo.extensions.showTwoButtonDialog
-import coom.moosik.mooo.model.Marker
-import kotlinx.coroutines.launch
-import java.io.IOException
-import java.io.InputStreamReader
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Circle
-import androidx.compose.material.icons.filled.GpsFixed
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -99,32 +43,42 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.PointMode.Companion.Polygon
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.Visibility
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMapOptions
-import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraMoveStartedReason
-import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindow
-import com.google.maps.android.compose.MarkerInfoWindowContent
-import com.google.maps.android.compose.Polygon
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import coom.moosik.mooo.R
+import coom.moosik.mooo.composable.ViewModelDemoTheme
 import coom.moosik.mooo.composable.notoSansFonts
-import coom.moosik.mooo.extensions.isNumeric
+import coom.moosik.mooo.extensions.isExplicitDeniedPermissions
+import coom.moosik.mooo.extensions.isPermissionGranted
 import coom.moosik.mooo.extensions.openBrowser
 import coom.moosik.mooo.extensions.showToast
+import coom.moosik.mooo.extensions.showTwoButtonDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.Locale
 
 typealias SimpleListener = (Boolean) -> Unit
@@ -254,6 +208,12 @@ class MapPage : CommonPage() {
             position = CameraPosition.fromLatLngZoom(currentPosition.second, 15f)
         }
 
+        val configuration = LocalConfiguration.current
+        val screenWidthDp = remember { configuration.screenWidthDp.dp } // Dp로 변환
+
+        val density = LocalDensity.current.density
+        val screenWidthPx = remember(screenWidthDp) { (screenWidthDp.value * density).toInt() }
+
         val cameraZoomLevel by remember { derivedStateOf { cameraPositionState.position.zoom } }
         val visibleRegion = remember { mutableStateOf<LatLngBounds?>(null) }
 
@@ -297,28 +257,14 @@ class MapPage : CommonPage() {
                         cameraPositionState = cameraPositionState)
                     {
 
-//                        if (cameraZoomLevel > 18f) {
-//                            val polygonPoints = listOf(
-//                                LatLng(37.5665, 126.9780), // 서울
-//                                LatLng(35.1796, 129.0756), // 부산
-//                                LatLng(36.3504, 127.3845), // 대전
-//                                LatLng(35.8714, 128.6014), // 대구
-//                                LatLng(37.5665, 126.9780),
-//                            )
-//                            Polygon(
-//                                points = polygonPoints,
-//                                fillColor = Color.Blue.copy(alpha = 0.3f),
-//                                strokeColor = Color.Blue,
-//                                strokeWidth = 5f
-//                            )
-//                        }
-//                        else
-//                        {
-//
-//                        }
-
                         for (marker in markers) {
-                            val iconIdentifier = resources.getIdentifier(marker.type, "drawable", packageName)
+                            var image = ""
+                            if (highlightsMarkers.contains(marker)) {
+                                image += "x"
+                            }
+                            image += marker.type
+
+                            val iconIdentifier = resources.getIdentifier(image, "drawable", packageName)
                             if (iconIdentifier != 0) {
 
                                 val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
@@ -332,53 +278,20 @@ class MapPage : CommonPage() {
                                         scope.launch {
                                             cameraPositionState.animate(
                                                 update = CameraUpdateFactory.newCameraPosition(
-                                                    CameraPosition.fromLatLngZoom(selectedMarker.position, 16f))
+                                                    CameraPosition.fromLatLngZoom(selectedMarker.position, 16f)
+                                                ), durationMs = 250
                                             )
-                                        }
-
-                                        scope.launch {
-                                            delay(1000)
-
                                             val projection = cameraPositionState.projection
                                             val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
-
                                             model.selectMarker(marker, anchorPoint)
                                         }
 
-                                        return@MarkerInfoWindow true
-                                    },
-                                )
-                            }
-                        }
-
-                        for (highlightsMarker in highlightsMarkers) {
-
-                            val iconIdentifier = resources.getIdentifier("x"+highlightsMarker.type, "drawable", packageName)
-                            if (iconIdentifier != 0) {
-                                val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
-                                val latLng = LatLng(highlightsMarker.latitude, highlightsMarker.longitude)
-
-                                MarkerInfoWindow(
-                                    state = MarkerState(position = latLng),
-                                    icon = icon,
-                                    onClick = { selectedMarker ->
-
                                         scope.launch {
-                                            cameraPositionState.animate(
-                                                update = CameraUpdateFactory.newCameraPosition(
-                                                    CameraPosition.fromLatLngZoom(selectedMarker.position, 16f))
-                                            )
-                                        }
-
-                                        scope.launch {
-                                            delay(1000)
-
+                                            delay(1200)
                                             val projection = cameraPositionState.projection
                                             val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
-
-                                            model.selectMarker(highlightsMarker, anchorPoint)
+                                            model.selectMarker(marker, anchorPoint)
                                         }
-
                                         return@MarkerInfoWindow true
                                     },
                                 )
@@ -446,7 +359,7 @@ class MapPage : CommonPage() {
                                         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60f, resources.displayMetrics).toInt()
                             }.absoluteOffset {
                                 IntOffset(
-                                    selectedMarker.second.x - offsetX.intValue,
+                                    (screenWidthPx / 2) - offsetX.intValue,
                                     selectedMarker.second.y - offsetY.intValue)
                             },
                             shape = RoundedCornerShape(12.dp),
@@ -459,18 +372,6 @@ class MapPage : CommonPage() {
                                 .padding(7.5.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(4.5.dp)) {
-
-                                var imageResource by remember { mutableIntStateOf(R.drawable.check_off) }
-                                var favoriteState by remember { mutableStateOf("찜하기") }
-
-                                LaunchedEffect(model.favoriteMarkers) {
-                                    model.favoriteMarkers.collectLatest { favoriteMarkers ->
-                                        imageResource = if (favoriteMarkers.contains(selectedMarker.first))
-                                            R.drawable.check_on else R.drawable.check_off
-                                        favoriteState = if (favoriteMarkers.contains(selectedMarker.first))
-                                            "찜해제" else "찜하기"
-                                    }
-                                }
 
                                 val selectedMarkerText = if (selectedLanguage == "한국어")
                                     selectedMarker.first.irm1 else selectedMarker.first.irm3
@@ -485,21 +386,28 @@ class MapPage : CommonPage() {
                                         openBrowser("http://gajaguyo.com/wp/$tail")
                                     }
                                 )
-
-//                                IconButton(onClick = { model.toggleHeart(selectedMarker.first) }) {
-//                                    Icon(
-//                                        modifier = Modifier.height(24.dp).width(24.dp),
-//                                        painter = painterResource(id = imageResource), // 이미지 리소스
-//                                        contentDescription = null,
-//                                        tint = Color.Unspecified
-//                                    )
-//                                }
-                                TextButton(
-                                    modifier =  Modifier.wrapContentWidth(),
-                                    text = favoriteState) {
-                                    model.toggleHeart(selectedMarker.first)
-                                }
                             }
+                        }
+
+                        var imageResource by remember { mutableIntStateOf(R.drawable.check_off) }
+                        var favoriteState by remember { mutableStateOf("찜하기") }
+
+                        LaunchedEffect(model.favoriteMarkers) {
+                            model.favoriteMarkers.collectLatest { favoriteMarkers ->
+                                imageResource = if (favoriteMarkers.contains(selectedMarker.first))
+                                    R.drawable.check_on else R.drawable.check_off
+
+                                favoriteState = if (favoriteMarkers.contains(selectedMarker.first))
+                                    "찜해제" else "찜하기"
+                            }
+                        }
+
+                        BorderButton(
+                            modifier =  Modifier.wrapContentWidth()
+                                .offset(x= (-7.5).dp, y = 65.0.dp)
+                                .align(Alignment.TopEnd),
+                            text = favoriteState) {
+                            model.toggleHeart(selectedMarker.first)
                         }
                     }
                 }

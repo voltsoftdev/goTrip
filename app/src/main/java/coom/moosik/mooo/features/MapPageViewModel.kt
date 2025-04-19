@@ -5,12 +5,7 @@ import android.content.res.AssetManager
 import android.graphics.Point
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.VisibleRegion
@@ -22,21 +17,21 @@ import coom.moosik.mooo.extensions.isNumeric
 import coom.moosik.mooo.extensions.putPreference
 import coom.moosik.mooo.model.Category
 import coom.moosik.mooo.model.Marker
-import coom.moosik.mooo.model.SelectableCategory
 import coom.moosik.mooo.model.SubCategory
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 import java.io.IOException
 import java.io.InputStreamReader
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MapPageViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -64,6 +59,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     val highlightsMarkers : MutableStateFlow<List<Marker>> = MutableStateFlow(emptyList())
 
     val selectedLanguage : MutableStateFlow<String> = MutableStateFlow("한국어")
+
     val languageSelectMode : MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     val visibleRegion: MutableStateFlow<VisibleRegion?> = MutableStateFlow(null)
@@ -71,12 +67,15 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
     init {
 
         viewModelScope.launch {
-            readMarkersFromServer().collectLatest { result ->
-                result?.let {
-                    allMarkers.tryEmit(it)
-                } ?: run {
-                    allMarkers.tryEmit(loadData())
+            combine(readMarkersFromDevice(), readMarkersFromServer()) { markers1, markers2 ->
+                Pair(markers1, markers2)
+            }.collectLatest {
+                val arrayList : ArrayList<Marker> = arrayListOf()
+                arrayList.addAll(it.first)
+                it.second?.let { list ->
+                    arrayList.addAll(list)
                 }
+                allMarkers.tryEmit(arrayList)
             }
         }
 
@@ -176,7 +175,6 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                     }
                 }
                 _markers.tryEmit(markers)
-                Log.d("woozie", "++ markers count:${markers.size} ")
             }
         }
 
@@ -184,9 +182,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
             combine(selectedCategory, favoriteMarkers) { selectedCategory, favoriteMarkers ->
                 val markers : ArrayList<Marker> = arrayListOf()
                 favoriteMarkers.forEach { marker ->
-                    if (selectedCategory.contains(marker.type)) {
-                        markers.add(marker)
-                    }
+                    markers.add(marker)
                 }
                 markers
             }.collectLatest {
@@ -254,8 +250,12 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         categories.tryEmit(updatedCategories)
     }
 
+    private fun readMarkersFromDevice() : Flow<ArrayList<Marker>> = flow {
+        emit(loadData())
+    }
+
     @Throws(IOException::class, CsvException::class)
-    private fun loadData() : ArrayList<Marker> {
+    private suspend fun loadData() : ArrayList<Marker> = suspendCoroutine { sender ->
         val assetManager: AssetManager = getApplication<MooSikApp>().assets
         val inputStream = assetManager.open("adata0.csv")
         val csvReader = CSVReader(InputStreamReader(inputStream, "utf-8"))
@@ -275,7 +275,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                 )
             }
         }
-        return markers
+        sender.resume(markers)
     }
 
     private fun MutableSet<Marker>.markersToJsonArray(): String {
