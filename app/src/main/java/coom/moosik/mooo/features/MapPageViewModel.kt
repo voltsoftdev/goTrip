@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStreamReader
@@ -64,7 +65,26 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     val visibleRegion: MutableStateFlow<VisibleRegion?> = MutableStateFlow(null)
 
+    private val _searchText = MutableStateFlow("")
+
+    val searchText: StateFlow<String> = _searchText
+
+    private var _searchedMarkers : StateFlow<List<Marker>> = MutableStateFlow(emptyList())
+
+    val searchedMarkers : StateFlow<List<Marker>>
+        get() = this._searchedMarkers
+
     init {
+
+        viewModelScope.launch {
+            _searchedMarkers = combine(searchText, allMarkers) { text, all ->
+                if (text.isBlank()) {
+                    emptyList()
+                } else {
+                    all.filter { it.irm1.contains(text, ignoreCase = true) }
+                }
+            }.stateIn(viewModelScope)
+        }
 
         viewModelScope.launch {
             combine(readMarkersFromDevice(), readMarkersFromServer()) { markers1, markers2 ->
@@ -248,6 +268,10 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
             }
         }
         categories.tryEmit(updatedCategories)
+    }
+
+    fun searchMarkers(keyword: String) {
+        _searchText.tryEmit(keyword)
     }
 
     private fun readMarkersFromDevice() : Flow<ArrayList<Marker>> = flow {

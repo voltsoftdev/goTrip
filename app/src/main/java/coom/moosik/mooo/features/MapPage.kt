@@ -308,6 +308,24 @@ class MapPage : CommonPage() {
                         .align(Alignment.TopStart).offset(x= 7.5.dp, y = 7.5.dp), text = " 검 색 ") {
                         model.selectMarker(null, null)
 
+                        val searchDialog = SearchPlaceDialogFragment { selectedMarker ->
+                            // 선택된 장소(Marker) 정보를 사용하여 Google 지도를 이동시키는 로직 구현
+                            val latitude = selectedMarker.latitude
+                            val longitude = selectedMarker.longitude
+                            // 예: 지도 CameraPosition 업데이트
+                            Log.d("SearchDialog", "선택된 장소: ${selectedMarker.irm1} ($latitude, $longitude)")
+                            // viewModel.moveCameraTo(LatLng(latitude, longitude))
+                            scope.launch {
+                                cameraPositionState.animate(
+                                    update = CameraUpdateFactory.newCameraPosition(
+                                        CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 16f)
+                                    ),
+                                    durationMs = 500
+                                )
+                            }
+
+                        }
+                        searchDialog.show(supportFragmentManager, "")
                     }
 
                     BorderButton(modifier =  Modifier.width(100.dp)

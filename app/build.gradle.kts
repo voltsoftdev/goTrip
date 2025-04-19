@@ -73,6 +73,7 @@ dependencies {
 
 
     implementation(libs.compose)
+    implementation(libs.compose.viewbinding)
     implementation(libs.compose.material)
     implementation(libs.compose.preview)
     implementation(libs.compose.material.icons)
