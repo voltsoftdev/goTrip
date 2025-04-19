@@ -456,25 +456,29 @@ class MapPage : CommonPage() {
                             }
                         }
 
-                        var imageResource by remember { mutableIntStateOf(R.drawable.check_off) }
-                        var favoriteState by remember { mutableStateOf("찜하기") }
+                        val highlightsMarkersCount = highlightsMarkers.size
+                        if (highlightsMarkersCount < 50) {
+                            
+                            var imageResource by remember { mutableIntStateOf(R.drawable.check_off) }
+                            var favoriteState by remember { mutableStateOf("찜하기") }
 
-                        LaunchedEffect(model.favoriteMarkers) {
-                            model.favoriteMarkers.collectLatest { favoriteMarkers ->
-                                imageResource = if (favoriteMarkers.contains(selectedMarker.first))
-                                    R.drawable.check_on else R.drawable.check_off
+                            LaunchedEffect(model.favoriteMarkers) {
+                                model.favoriteMarkers.collectLatest { favoriteMarkers ->
+                                    imageResource = if (favoriteMarkers.contains(selectedMarker.first))
+                                        R.drawable.check_on else R.drawable.check_off
 
-                                favoriteState = if (favoriteMarkers.contains(selectedMarker.first))
-                                    "찜해제" else "찜하기"
+                                    favoriteState = if (favoriteMarkers.contains(selectedMarker.first))
+                                        "찜해제" else "찜하기"
+                                }
                             }
-                        }
 
-                        BorderButton(
-                            modifier =  Modifier.wrapContentWidth()
-                                .offset(x= (-7.5).dp, y = 65.0.dp)
-                                .align(Alignment.TopEnd),
-                            text = favoriteState) {
-                            model.toggleHeart(selectedMarker.first)
+                            BorderButton(
+                                modifier =  Modifier.wrapContentWidth()
+                                    .offset(x= (-7.5).dp, y = 65.0.dp)
+                                    .align(Alignment.TopEnd),
+                                text = favoriteState) {
+                                model.toggleHeart(selectedMarker.first)
+                            }
                         }
                     }
                 }
