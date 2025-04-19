@@ -69,21 +69,28 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     val searchText: StateFlow<String> = _searchText
 
-    private var _searchedMarkers : StateFlow<List<Marker>> = MutableStateFlow(emptyList())
+    private var _searchedMarkers : MutableStateFlow<List<Marker>?> = MutableStateFlow(emptyList())
 
-    val searchedMarkers : StateFlow<List<Marker>>
+    val searchedMarkers : StateFlow<List<Marker>?>
         get() = this._searchedMarkers
+
+    private var _finalSearchedMarker : MutableStateFlow<Marker?> = MutableStateFlow(null)
+
+    val finalSearchedMarker : StateFlow<Marker?>
+        get() = this._finalSearchedMarker
 
     init {
 
         viewModelScope.launch {
-            _searchedMarkers = combine(searchText, allMarkers) { text, all ->
+            combine(searchText, allMarkers) { text, all ->
                 if (text.isBlank()) {
                     emptyList()
                 } else {
                     all.filter { it.irm1.contains(text, ignoreCase = true) }
                 }
-            }.stateIn(viewModelScope)
+            }.collectLatest {
+                _searchedMarkers.tryEmit(it)
+            }
         }
 
         viewModelScope.launch {
@@ -199,16 +206,22 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         }
 
         viewModelScope.launch {
-            combine(selectedCategory, favoriteMarkers) { selectedCategory, favoriteMarkers ->
+            combine(selectedCategory, finalSearchedMarker, favoriteMarkers) { selectedCategory, finalSearchedMarker, favoriteMarkers ->
                 val markers : ArrayList<Marker> = arrayListOf()
                 favoriteMarkers.forEach { marker ->
-                    markers.add(marker)
+                    if (selectedCategory.contains(marker.type)) {
+                        markers.add(marker)
+                    }
+                    else if (finalSearchedMarker?.irm1 == marker.irm1) {
+                        markers.add(marker)
+                    }
                 }
                 markers
             }.collectLatest {
                 highlightsMarkers.tryEmit(it)
             }
         }
+
     }
 
     fun selectMarker(marker: Marker?, point: Point?) {
@@ -272,6 +285,15 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
 
     fun searchMarkers(keyword: String) {
         _searchText.tryEmit(keyword)
+    }
+
+    fun addMarker(marker: Marker) {
+        _finalSearchedMarker.tryEmit(marker)
+    }
+
+    fun clearSearchedMarker() {
+        _finalSearchedMarker.tryEmit(null)
+        _searchedMarkers.tryEmit(null)
     }
 
     private fun readMarkersFromDevice() : Flow<ArrayList<Marker>> = flow {

@@ -195,6 +195,7 @@ class MapPage : CommonPage() {
         val scope = rememberCoroutineScope()
 
         val markers by model.markers.collectAsState()
+        val finalSearchedMarker by model.finalSearchedMarker.collectAsState()
         val highlightsMarkers by model.highlightsMarkers.collectAsState()
 
         val selectedMarker by model.selectedMarker.collectAsState()
@@ -220,7 +221,6 @@ class MapPage : CommonPage() {
         // 카메라 위치가 변경될 때마다 visibleRegion 업데이트
         LaunchedEffect(cameraPositionState.position) {
             snapshotFlow { cameraPositionState.projection?.visibleRegion }.collectLatest { region ->
-                // visibleRegion.value = region
                 region?.let { model.visibleRegion.tryEmit(it) }
             }
         }
@@ -231,6 +231,7 @@ class MapPage : CommonPage() {
             snapshotFlow { cameraMoveStartedReason }.collectLatest {
                 if (it == CameraMoveStartedReason.GESTURE) {
                     model.selectMarker(null, null)
+                    model.clearSearchedMarker()
                 }
             }
         }
@@ -253,11 +254,55 @@ class MapPage : CommonPage() {
                         googleMapOptionsFactory = {
                             GoogleMapOptions().mapType(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL)
                         },
-                        onMapClick = { model.selectMarker(null, null) },
+                        onMapClick = {
+                            model.selectMarker(null, null)
+                            model.clearSearchedMarker()
+                        },
                         cameraPositionState = cameraPositionState)
                     {
 
                         for (marker in markers) {
+                            var image = ""
+                            if (highlightsMarkers.contains(marker)) {
+                                image += "x"
+                            }
+                            image += marker.type
+
+                            val iconIdentifier = resources.getIdentifier(image, "drawable", packageName)
+                            if (iconIdentifier != 0) {
+
+                                val icon = BitmapDescriptorFactory.fromResource(iconIdentifier)
+                                val latLng = LatLng(marker.latitude, marker.longitude)
+
+                                MarkerInfoWindow(
+                                    state = MarkerState(position = latLng),
+                                    icon = icon,
+                                    onClick = { selectedMarker ->
+
+                                        scope.launch {
+                                            cameraPositionState.animate(
+                                                update = CameraUpdateFactory.newCameraPosition(
+                                                    CameraPosition.fromLatLngZoom(selectedMarker.position, 16f)
+                                                ), durationMs = 250
+                                            )
+                                            val projection = cameraPositionState.projection
+                                            val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
+                                            model.selectMarker(marker, anchorPoint)
+                                        }
+
+                                        scope.launch {
+                                            delay(1200)
+                                            val projection = cameraPositionState.projection
+                                            val anchorPoint = projection?.toScreenLocation(selectedMarker.position)
+                                            model.selectMarker(marker, anchorPoint)
+                                        }
+                                        return@MarkerInfoWindow true
+                                    },
+                                )
+                            }
+                        }
+
+                        finalSearchedMarker?.let { marker ->
                             var image = ""
                             if (highlightsMarkers.contains(marker)) {
                                 image += "x"
@@ -307,14 +352,16 @@ class MapPage : CommonPage() {
                     BorderButton(modifier =  Modifier.width(100.dp)
                         .align(Alignment.TopStart).offset(x= 7.5.dp, y = 7.5.dp), text = " 검 색 ") {
                         model.selectMarker(null, null)
+                        model.clearSearchedMarker()
 
                         val searchDialog = SearchPlaceDialogFragment { selectedMarker ->
-                            // 선택된 장소(Marker) 정보를 사용하여 Google 지도를 이동시키는 로직 구현
+
+                            if (!markers.contains(selectedMarker)) {
+                                model.addMarker(selectedMarker)
+                            }
+
                             val latitude = selectedMarker.latitude
                             val longitude = selectedMarker.longitude
-                            // 예: 지도 CameraPosition 업데이트
-                            Log.d("SearchDialog", "선택된 장소: ${selectedMarker.irm1} ($latitude, $longitude)")
-                            // viewModel.moveCameraTo(LatLng(latitude, longitude))
                             scope.launch {
                                 cameraPositionState.animate(
                                     update = CameraUpdateFactory.newCameraPosition(
@@ -332,6 +379,7 @@ class MapPage : CommonPage() {
                         .align(Alignment.TopStart).offset(x= 7.5.dp, y = 65.dp), text = " 현재 위치 ") {
 
                         model.selectMarker(null, null)
+                        model.clearSearchedMarker()
 
                         requestLocationReadPermission { isGranted ->
                             if (isGranted) {
@@ -343,6 +391,7 @@ class MapPage : CommonPage() {
                     BorderButton(modifier =  Modifier.wrapContentWidth().offset(x= (-7.5).dp, y = 7.5.dp)
                         .align(Alignment.TopEnd), text = " 목 록 ") {
                         model.selectMarker(null, null)
+                        model.clearSearchedMarker()
 
                         CategorySelectDialog().show(supportFragmentManager, "")
                     }

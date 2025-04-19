@@ -53,7 +53,7 @@ class SearchPlaceDialogFragment(
                     onSearch = {
                         sharedViewModel.searchMarkers(it)
                     },
-                    searchedMarkers = searchedMarkers,
+                    searchedMarkers = searchedMarkers ?: emptyList(),
                     onPlaceClick = {
                         onPlaceSelected(it)
 
