@@ -8,6 +8,21 @@ plugins {
 }
 
 android {
+
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../keystore")
+            storePassword = "qwer1234"
+            keyAlias = "com.moosik.moo"
+            keyPassword = "qwer1234"
+        }
+        create("release") {
+            storeFile = file("../keystore")
+            keyAlias = "com.moosik.moo"
+            storePassword = "qwer1234"
+            keyPassword = "qwer1234"
+        }
+    }
     namespace = "coom.moosik.mooo"
     compileSdk = 35
 
@@ -22,7 +37,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+        }
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
