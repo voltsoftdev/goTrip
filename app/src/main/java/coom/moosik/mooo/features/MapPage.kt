@@ -91,17 +91,17 @@ class MapPage : CommonPage() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // 구글맵 초기화 합니다
         MapsInitializer.initialize(applicationContext)
-
+        // 화면을 구성합니다
         setContent {
             ViewModelDemoTheme {
                 Surface(modifier = Modifier.fillMaxSize(),  color = MaterialTheme.colors.background) {
-                    MapPageLayout()
+                    MapPageLayout() // 여기 서부터 앱 화면 구성을 시작합니다
                 }
             }
         }
-
+        // 위치 정보를 불러 오기 위해 앱 권한을 체크 합니다. 사용자가 권한을 승인한 경우에만 loadDeviceLocation 를 실행합니다
         requestLocationReadPermission { isGranted ->
             if (isGranted) {
                 loadDeviceLocation()
@@ -109,6 +109,9 @@ class MapPage : CommonPage() {
         }
     }
 
+    /**
+     * 현재 위치를 불러오는 함수입니다.
+     */
     @SuppressLint("MissingPermission")
     private fun loadDeviceLocation() {
         LocationServices.getFusedLocationProviderClient(this).lastLocation
@@ -133,7 +136,7 @@ class MapPage : CommonPage() {
             null
         }
     }
-
+    // 사용에게 위치 정보 승인을 요청 하는 함수 입니다.
     private fun requestLocationReadPermission(listener: SimpleListener) {
         val notificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arrayListOf(Manifest.permission.POST_NOTIFICATIONS)
@@ -146,10 +149,10 @@ class MapPage : CommonPage() {
         val permissions = arrayListOf<String>()
         permissions.addAll(notificationPermission)
         permissions.addAll(locationPermissions)
-
+        // (1) 이미 승인 된 경우
         if (isPermissionGranted(*permissions.toTypedArray())) {
             listener(true)
-        }
+        } // (2) 사용자가 명시적으로 권한 승인을 거부한 경우 > 앱에서 추가 요청할 수 없으므로 설정화면으로 이동해서 권한 승인을 유도합니다
         else if (isExplicitDeniedPermissions(*notificationPermission.toTypedArray()))
         {
             showTwoButtonDialog(
@@ -165,21 +168,7 @@ class MapPage : CommonPage() {
                 }
             }
         }
-        else if (isExplicitDeniedPermissions(*locationPermissions.toTypedArray()))
-        {
-            showTwoButtonDialog(
-                resources.getString(R.string.request_permission_location_title),
-                resources.getString(R.string.request_permission_location_message_to_setting)) {
-
-                if (it) {
-                    lifecycleScope.launch {
-                        moveToSettingPage {
-                            listener(isPermissionGranted(*locationPermissions.toTypedArray()))
-                        }
-                    }
-                }
-            }
-        }
+        // (3) 거부가 되어 있으므로 사용자에게 권한 승인을 요청합니다
         else
         {
             requestPermissions(permissions.toTypedArray()) { _, _, _ ->
@@ -198,12 +187,12 @@ class MapPage : CommonPage() {
         val finalSearchedMarker by model.finalSearchedMarker.collectAsState()
         val highlightsMarkers by model.highlightsMarkers.collectAsState()
 
-        val selectedMarker by model.selectedMarker.collectAsState()
-        val selectedLanguage by model.selectedLanguage.collectAsState()
+        val selectedMarker by model.selectedMarker.collectAsState() // 내가 선택한 마커들
+        val selectedLanguage by model.selectedLanguage.collectAsState() // 선택한 언어 모드
 
-        val languageSelectMode by model.languageSelectMode.collectAsState()
+        val languageSelectMode by model.languageSelectMode.collectAsState() // 언어 모드 선택으로 진입 했는지 여부
 
-        val currentPosition by model.currentPosition.collectAsState()
+        val currentPosition by model.currentPosition.collectAsState() // 사용자 현재 위치
 
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(currentPosition.second, 15f)
@@ -235,10 +224,10 @@ class MapPage : CommonPage() {
                 }
             }
         }
-
+        // 화면 전체를 Scaffold 로 구성합니다 (안드로이드 기본 레이아웃)
         Scaffold(
             content = { paddingValues ->
-
+                // 내부를 커다란 박스로 채웁니다
                 Box(modifier = modifier
                     .fillMaxSize()
                     .padding(paddingValues)
@@ -374,7 +363,7 @@ class MapPage : CommonPage() {
                         }
                         searchDialog.show(supportFragmentManager, "")
                     }
-
+                    // 누르면 현재 위치로 이동하는 버튼 노출
                     BorderButton(modifier =  Modifier.width(100.dp)
                         .align(Alignment.TopStart).offset(x= 7.5.dp, y = 65.dp), text = " 현재 위치 ") {
 
@@ -396,7 +385,7 @@ class MapPage : CommonPage() {
                         CategorySelectDialog().show(supportFragmentManager, "")
                     }
 
-
+                    // 언어 선택 모드 진입 했다면 , 언어 모드를 선택할 수 있는 레이아웃(버튼 2개 짜리) 를 노출
                     if (languageSelectMode) {
                         LanguageSelectLayout(modifier = Modifier
                             .offset(x= (7.5).dp, y = (-7.5).dp)
@@ -413,7 +402,7 @@ class MapPage : CommonPage() {
                             model.languageSelectMode.tryEmit(true)
                         }
                     }
-
+                    // 선택한 마커 정보를 화면에 노출
                     selectedMarker?.let { selectedMarker ->
 
                         val offsetX = remember { mutableIntStateOf(0) }
@@ -455,7 +444,7 @@ class MapPage : CommonPage() {
                                 )
                             }
                         }
-
+                        // 하이라이트 마커 갯수가 50개 미만인 경우에만 찜하기 기능 노출
                         val highlightsMarkersCount = highlightsMarkers.size
                         if (highlightsMarkersCount < 50) {
                             

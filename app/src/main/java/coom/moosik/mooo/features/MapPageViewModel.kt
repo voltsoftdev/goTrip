@@ -80,7 +80,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         get() = this._finalSearchedMarker
 
     init {
-
+        // 사용자가 입력한 텍스트와 마커 정보를 비교해서 검색결과 화면에 노출 합니다
         viewModelScope.launch {
             combine(searchText, allMarkers) { text, all ->
                 if (text.isBlank()) {
@@ -92,10 +92,10 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                 _searchedMarkers.tryEmit(it)
             }
         }
-
+        // 단말기에서 마커를 불러오고 , '가자구요' 서버에서도 마커 정보를 불러 옵니다
         viewModelScope.launch {
             combine(readMarkersFromDevice(), readMarkersFromServer()) { markers1, markers2 ->
-                Pair(markers1, markers2)
+                Pair(markers1, markers2) // 두 정보를 합칩니다.
             }.collectLatest {
                 val arrayList : ArrayList<Marker> = arrayListOf()
                 arrayList.addAll(it.first)
@@ -139,8 +139,8 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         subCategories4.add(SubCategory(id = "smu", img = "smu", name = "식물원"))
         subCategories4.add(SubCategory(id = "uuj", img = "uuj", name = "유원지"))
         subCategories4.add(SubCategory(id = "msg", img = "msg", name = "미술관"))
-        subCategories4.add(SubCategory(id = "bmg1", img = "bmg", name = "국립박물관"))
-        subCategories4.add(SubCategory(id = "bmg2", img = "bmg", name = "사립박물관"))
+        subCategories4.add(SubCategory(id = "bmg1", img = "bmg", name = "국립박물관")) // 국립박물관에 맞는 이미지 이름을 img 에 넣어주면 됩니다
+        subCategories4.add(SubCategory(id = "bmg2", img = "bmg", name = "사립박물관")) // 사립박물관에 맞는 이미지 이름을 img 에 넣어주면 됩니다
         subCategories4.add(SubCategory(id = "cmd", img = "cmd", name = "천문대"))
         subCategories4.add(SubCategory(id = "unc", img = "unc", name = "유네스코지정"))
         subCategories4.add(SubCategory(id = "dsg", img = "dsg", name = "도서관"))
@@ -161,6 +161,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         subCategories6.add(SubCategory(id = "gb1", img = "gb", name = "국보"))
         subCategories6.add(SubCategory(id = "gb2", img = "gb", name = "보물"))
         subCategories6.add(SubCategory(id = "sjj", img = "sjj", name = "사적지"))
+        subCategories6.add(SubCategory(id = "dr", img = "dr", name = "국가등록문화유산(dr)"))
         subCategories6.add(SubCategory(id = "dr1", img = "dr", name = "국가등록문화유산"))
         subCategories6.add(SubCategory(id = "dr2", img = "dr", name = "시도등록문화유산"))
         subCategories6.add(SubCategory(id = "mh1", img = "mh", name = "국가민속문화유산"))
@@ -315,7 +316,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
                     latitude = content[0].toDouble(),
                     longitude = content[1].toDouble(),
                     kung = content[6],
-                    type = content[4],
+                    type = content[4].replace("\"dr'","dr"),
                     irm1 = content[7],
                     irm3 = content[7] + "(EN)")
                 )
