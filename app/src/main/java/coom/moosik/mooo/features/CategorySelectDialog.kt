@@ -64,6 +64,8 @@ import coom.moosik.mooo.composable.notoSansFonts
 import coom.moosik.mooo.model.Category
 import coom.moosik.mooo.model.SelectableCategory
 import coom.moosik.mooo.model.SubCategory
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class CategorySelectDialog : DialogFragment() {
@@ -138,7 +140,7 @@ class CategorySelectDialog : DialogFragment() {
 
                 CategoryItemView(category)
 
-                category.subCategories.forEach { subCategory ->
+                category.subCategories.filter { !it.isFixed }.forEach { subCategory ->
                     SubCategoryItemView(category, subCategory)
                 }
             }

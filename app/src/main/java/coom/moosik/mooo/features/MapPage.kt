@@ -205,7 +205,7 @@ class MapPage : CommonPage() {
         val screenWidthPx = remember(screenWidthDp) { (screenWidthDp.value * density).toInt() }
 
         val cameraZoomLevel by remember { derivedStateOf { cameraPositionState.position.zoom } }
-        val visibleRegion = remember { mutableStateOf<LatLngBounds?>(null) }
+        val visibleRegion by remember { mutableStateOf<LatLngBounds?>(null) }
 
         // 카메라 위치가 변경될 때마다 visibleRegion 업데이트
         LaunchedEffect(cameraPositionState.position) {
@@ -379,6 +379,14 @@ class MapPage : CommonPage() {
 
                     BorderButton(modifier =  Modifier.wrapContentWidth().offset(x= (-7.5).dp, y = 7.5.dp)
                         .align(Alignment.TopEnd), text = " 목 록 ") {
+                        model.selectMarker(null, null)
+                        model.clearSearchedMarker()
+
+                        ImageDialogFragment(R.drawable.mok).show(supportFragmentManager, "")
+                    }
+
+                    BorderButton(modifier =  Modifier.wrapContentWidth().offset(x= (0).dp, y = 7.5.dp)
+                        .align(Alignment.TopCenter), text = " 설 정 ") {
                         model.selectMarker(null, null)
                         model.clearSearchedMarker()
 

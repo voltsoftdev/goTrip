@@ -112,17 +112,19 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         val list = arrayListOf<Category>()
 
         val subCategories1 : MutableSet<SubCategory> = mutableSetOf()
-        subCategories1.add(SubCategory(id = "mncj", img = "mncj", name = "먹거리축제"))
+        subCategories1.add(SubCategory(id = "mncj", img = "mncj", name = "먹거리축제", isFixed = true))
         subCategories1.add(SubCategory(id = "chcj", img = "chcj", name = "문화축제"))
         subCategories1.add(SubCategory(id = "bncj", img = "bncj", name = "보는축제"))
         subCategories1.add(SubCategory(id = "sgjt", img = "sgjt", name = "5일장"))
+        subCategories1.add(SubCategory(id = "hs", img = "hs", name = "행사"))
         list.add(Category(id = "축제", subCategories = subCategories1.toMutableList()))
 
         val subCategories2 : MutableSet<SubCategory> = mutableSetOf()
-        subCategories2.add(SubCategory(id = "mncj", img = "mncj", name = "먹자골목"))
+        subCategories2.add(SubCategory(id = "mncj", img = "mncj", name = "먹자골목", isFixed = true))
         subCategories2.add(SubCategory(id = "sd1", img = "sd", name = "미쉐린"))
         subCategories2.add(SubCategory(id = "sd2", img = "sd", name = "식객"))
         subCategories2.add(SubCategory(id = "sd3", img = "sd", name = "맛집"))
+        subCategories2.add(SubCategory(id = "sd5", img = "sd5", name = "식당"))
         list.add(Category(id = "먹거리", subCategories = subCategories2.toMutableList()))
 
         val subCategories3 : MutableSet<SubCategory> = mutableSetOf()
@@ -252,7 +254,15 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         val updatedCategories = categories.value.map { category ->
             if (category.id == id) {
                 category.copy(
-                    subCategories = category.subCategories.map { it.copy(isChecked = !category.isChecked) }
+                    subCategories = category.subCategories.map {
+                        if (it.isFixed) {
+                            it.copy(isChecked = true)
+                        }
+                        else
+                        {
+                            it.copy(isChecked = !category.isChecked)
+                        }
+                    }
                 )
             }
             else
