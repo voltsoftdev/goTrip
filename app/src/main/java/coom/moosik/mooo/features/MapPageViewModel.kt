@@ -112,6 +112,7 @@ class MapPageViewModel(application: Application) : AndroidViewModel(application)
         val list = arrayListOf<Category>()
 
         val subCategories1 : MutableSet<SubCategory> = mutableSetOf()
+        // 무조건 고정 노출을 하고자 하는 카테고리 경우에는 isFixed = true 로 해주면 됩니다
         subCategories1.add(SubCategory(id = "mncj", img = "mncj", name = "먹거리축제", isFixed = true))
         subCategories1.add(SubCategory(id = "chcj", img = "chcj", name = "문화축제"))
         subCategories1.add(SubCategory(id = "bncj", img = "bncj", name = "보는축제"))

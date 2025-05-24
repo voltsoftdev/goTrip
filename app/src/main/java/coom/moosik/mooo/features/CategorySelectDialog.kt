@@ -68,6 +68,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+// 카테고리 선택 다이얼로그 입니다
 class CategorySelectDialog : DialogFragment() {
 
     private val sharedViewModel : MapPageViewModel by activityViewModels()
@@ -139,7 +140,7 @@ class CategorySelectDialog : DialogFragment() {
             items(categories) { category ->
 
                 CategoryItemView(category)
-
+                // isFixed 가 true 가 아닌 경우에만 카테고리 선택화면 노출 되도록 합니다
                 category.subCategories.filter { !it.isFixed }.forEach { subCategory ->
                     SubCategoryItemView(category, subCategory)
                 }
